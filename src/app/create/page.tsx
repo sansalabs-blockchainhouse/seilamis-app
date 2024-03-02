@@ -84,7 +84,7 @@ export default function Create() {
 
   return (
     <>
-      <div className="flex flex-col h-screen items-center p-5 z-50">
+      <div className="flex flex-col h-full md:h-screen items-center p-5 z-50">
         <div className="flex flex-col items-start gap-4 justify-between">
           <Link href={"/"} className="flex items-center gap-2">
             <span className="text-white font-bold text-base">

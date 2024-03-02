@@ -61,7 +61,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
         .get(`raffle-entry/${accounts[0].address}/${params.id}`)
         .then((response) => response.data),
     refetchOnWindowFocus: false,
-    initialData: 0
+    initialData: 0,
   });
 
   const { signingClient } = useSigningClient();
@@ -90,22 +90,42 @@ export default function Raffle({ params }: { params: { id: string } }) {
       }
 
       toast.loading("Sending...");
-      const fee = calculateFee(100000, "0.1usei");
-      const amountPrice = {
-        amount: new BigNumber(raffle.price * 1e6 * Number(amount)).toString(),
-        denom: "usei",
-      };
+      const fee = calculateFee(200000, "0.1usei");
+      const totalPrice = raffle.price * 1e6 * Number(amount)
 
-      const sendResponse = await signingClient?.sendTokens(
+      const messages = [
+        {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: accounts[0].address,
+            toAddress: raffle.creator,
+            amount: [
+              { denom: "usei", amount: new BigNumber(totalPrice * 0.97).toString() },
+            ],
+          },
+        },
+        {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: accounts[0].address,
+            toAddress: "sei13hpc6h3dcd705hyugt9wac0dsyyp0fvg06c7dv",
+            amount: [
+              { denom: "usei", amount: new BigNumber(totalPrice * 0.03).toString() },
+            ],
+          },
+        },
+      ];
+
+      const response = await signingClient.signAndBroadcast(
         accounts[0].address,
-        raffle.creator,
-        [amountPrice],
+        messages,
         fee
       );
 
+
       const body = {
         wallet: accounts[0].address,
-        tx: sendResponse?.transactionHash,
+        tx: response?.transactionHash,
         amount: Number(amount),
         raffleId: raffle.id,
       };
@@ -117,9 +137,9 @@ export default function Raffle({ params }: { params: { id: string } }) {
       toast.success("Success!");
       await refetch();
       await refetchTickets();
-      await refetchUserTickets()
+      await refetchUserTickets();
     } catch (error: any) {
-        console.log(error)
+      console.log(error);
       toast.dismiss();
 
       if (error.name === "AxiosError") {
@@ -137,7 +157,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
   return (
     <>
       {!isLoading && raffle && (
-        <div className="font-poppins h-screen flex flex-col items-center justify-between  p-5">
+        <div className="font-poppins h-full flex flex-col items-center justify-between p-5">
           <div className="flex flex-col items-start gap-4 justify-between">
             <Link href={"/"} className="flex items-center gap-2">
               <span className="text-white font-bold text-base">

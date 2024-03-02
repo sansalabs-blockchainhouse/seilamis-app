@@ -68,22 +68,42 @@ export default function Card({
       }
 
       toast.loading("Sending...");
-      const fee = calculateFee(100000, "0.1usei");
-      const amountPrice = {
-        amount: new BigNumber(price * 1e6).toString(),
-        denom: "usei",
-      };
+      const fee = calculateFee(200000, "0.1usei");
+      const totalPrice = price * 1e6 * Number(1)
 
-      const sendResponse = await signingClient?.sendTokens(
+      const messages = [
+        {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: accounts[0].address,
+            toAddress: creator,
+            amount: [
+              { denom: "usei", amount: new BigNumber(totalPrice * 0.97).toString() },
+            ],
+          },
+        },
+        {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: accounts[0].address,
+            toAddress: "sei13hpc6h3dcd705hyugt9wac0dsyyp0fvg06c7dv",
+            amount: [
+              { denom: "usei", amount: new BigNumber(totalPrice * 0.03).toString() },
+            ],
+          },
+        },
+      ];
+
+
+      const response = await signingClient.signAndBroadcast(
         accounts[0].address,
-        creator,
-        [amountPrice],
+        messages,
         fee
       );
 
       const body = {
         wallet: accounts[0].address,
-        tx: sendResponse?.transactionHash,
+        tx: response?.transactionHash,
         amount: 1,
         raffleId: id,
       };
