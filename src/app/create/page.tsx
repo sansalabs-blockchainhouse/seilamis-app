@@ -25,6 +25,7 @@ export default function Create() {
 
   const [endDate, setEndDate] = useState(new Date());
   const [currentDate, _setCurrentDate] = useState(new Date());
+  const [days, setDays] = useState(0);
 
   const [terms, setTerms] = useState<boolean>(false);
 
@@ -32,6 +33,10 @@ export default function Create() {
     if (!cosmWasmClient || !currentNft) return;
 
     if (!offlineSigner || !signingCosmWasmClient) return;
+
+    if (days === 0) {
+      return toast.error("Select a valid raffle duration!")
+    }
 
     const fee = calculateFee(228605, "0.1usei");
 
@@ -73,6 +78,7 @@ export default function Create() {
     signingCosmWasmClient,
     currentNft,
     endDate,
+    days
   ]);
 
   const addDays = (days: number) => {
@@ -166,26 +172,54 @@ export default function Create() {
               </label>
               <div className="flex w-full gap-5">
                 <button
-                  onClick={() => addDays(1)}
-                  className="bg-primary py-2 px-4 rounded-lg"
+                  onClick={() => {
+                    setDays(1);
+                    addDays(1);
+                  }}
+                  className={`border border-primary ${
+                    days === 1
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   1 day
                 </button>
                 <button
-                  onClick={() => addDays(3)}
-                  className="bg-primary py-2 px-3 rounded-lg"
+                  onClick={() => {
+                    setDays(3);
+                    addDays(3);
+                  }}
+                  className={`border border-primary ${
+                    days === 3
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-3 rounded-lg`}
                 >
                   3 days
                 </button>
                 <button
-                  onClick={() => addDays(5)}
-                  className="bg-primary py-2 px-3 rounded-lg"
+                  onClick={() => {
+                    setDays(5);
+                    addDays(5);
+                  }}
+                  className={`border border-primary ${
+                    days === 5
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-3 rounded-lg`}
                 >
                   5 days
                 </button>
                 <button
-                  onClick={() => addDays(7)}
-                  className="bg-primary py-2 px-3 rounded-lg"
+                  onClick={() => {
+                    setDays(7);
+                    addDays(7);
+                  }}
+                  className={`border border-primary py-2 px-3 rounded-lg ${
+                    days === 7
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } `}
                 >
                   7 days
                 </button>
