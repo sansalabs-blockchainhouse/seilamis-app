@@ -202,7 +202,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
                   claimed by the winner or creator once the draw is done.
                 </span>
                 <span className="text-white text-base font-normal">
-                  2. Raffle tickets cannot be refunded once bought
+                  2. Raffle tickets cannot be refunded once bought.
                 </span>
                 <span className="text-white text-base font-normal">
                   3. Raffle tickets will not be refunded if you did not win the
