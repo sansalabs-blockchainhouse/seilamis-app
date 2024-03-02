@@ -43,7 +43,6 @@ export default function Create() {
     };
     toast.loading("Sending...");
 
-
     const result = await signingCosmWasmClient.execute(
       accounts[0].address,
       currentNft.contract,
@@ -73,7 +72,7 @@ export default function Create() {
     offlineSigner,
     signingCosmWasmClient,
     currentNft,
-    endDate
+    endDate,
   ]);
 
   const addDays = (days: number) => {
@@ -87,10 +86,10 @@ export default function Create() {
       <div className="flex flex-col h-full md:h-screen items-center p-5 z-50">
         <div className="flex flex-col items-start gap-4 justify-between">
           <Link href={"/"} className="flex items-center gap-2">
-            <span className="text-white font-bold text-base">
+            <span className="text-black font-bold text-base">
               <IoArrowBackOutline />
             </span>
-            <span className="text-white font-bold text-base">Go back</span>
+            <span className="text-black font-bold text-base">Go back</span>
           </Link>
           <div className="flex flex-col md:flex-row items-start gap-12 justify-between">
             {!currentNft && (
@@ -139,7 +138,8 @@ export default function Create() {
                 raffle.
               </span>
               <span className="text-white text-base font-normal">
-                4. You can only buy 40% of total tickets.
+                4. When the timer expires, the raffle will be drawn. No ticket
+                minimums or maximums are enforced
               </span>
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function Create() {
           <div className="flex gap-5 justify-between flex-col md:flex-row">
             <div className="flex flex-col w-full gap-2">
               <label className="text-black text-lg">
-                Ticket Price <span className="text-red-700">*</span>
+                Ticket Price (SEI) <span className="text-red-700">*</span>
               </label>
 
               <input
@@ -162,7 +162,7 @@ export default function Create() {
             </div>
             <div className="flex flex-col w-full gap-2">
               <label className="text-black text-lg">
-                Raffle endd date <span className="text-red-700">*</span>
+                Raffle Duration <span className="text-red-700">*</span>
               </label>
               <div className="flex w-full gap-5">
                 <button

@@ -160,10 +160,10 @@ export default function Raffle({ params }: { params: { id: string } }) {
         <div className="font-poppins h-full flex flex-col items-center justify-between p-5">
           <div className="flex flex-col items-start gap-4 justify-between">
             <Link href={"/"} className="flex items-center gap-2">
-              <span className="text-white font-bold text-base">
+              <span className="text-black font-bold text-base">
                 <IoArrowBackOutline />
               </span>
-              <span className="text-white font-bold text-base">Go back</span>
+              <span className="text-black font-bold text-base">Go back</span>
             </Link>
             <div className="flex flex-col md:flex-row items-start gap-5 justify-between">
               <div className="flex flex-col w-full md:w-auto">
