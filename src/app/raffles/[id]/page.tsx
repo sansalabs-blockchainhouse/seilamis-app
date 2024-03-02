@@ -168,7 +168,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
             <div className="flex flex-col md:flex-row items-start gap-5 justify-between">
               <div className="flex flex-col w-full md:w-auto">
                 <div
-                  className="bg-card_bg w-full md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
+                  className="bg-card_bg w-full bg-bottom  md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
                   style={{
                     backgroundImage: `url(${raffle.image})`,
                     backgroundSize: "cover",
