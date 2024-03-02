@@ -4,7 +4,6 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import Link from "next/link";
 import Modal from "@/components/Modal";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { calculateFee } from "@cosmjs/stargate";
 import {
@@ -13,6 +12,7 @@ import {
   useCosmWasmClient,
 } from "@sei-js/react";
 import { api } from "@/services/api";
+import { formatReadableDate } from "@/utils/formatDate";
 
 export default function Create() {
   const { offlineSigner, accounts } = useWallet();
@@ -23,8 +23,8 @@ export default function Create() {
   const [isOpen, setIsOpen] = useState(false);
   const [price, setPrice] = useState<string>("1");
 
-  const [endDate, setEndDate] = useState<string>(new Date().toString());
-  const [startDate, setStartDate] = useState<string>(new Date().toString());
+  const [endDate, setEndDate] = useState(new Date());
+  const [currentDate, _setCurrentDate] = useState(new Date());
 
   const [terms, setTerms] = useState<boolean>(false);
 
@@ -41,6 +41,8 @@ export default function Create() {
         token_id: currentNft.tokenId,
       },
     };
+    toast.loading("Sending...");
+
 
     const result = await signingCosmWasmClient.execute(
       accounts[0].address,
@@ -52,16 +54,33 @@ export default function Create() {
     const body = {
       creator: accounts[0].address,
       tx: result.transactionHash,
-      startTime: new Date(startDate).toISOString(),
+      startTime: new Date().toISOString(),
       endTime: new Date(endDate).toISOString(),
       price,
       name: currentNft.nftData.name,
       image: currentNft.nftData.image,
-      collectionName: "sei",
+      collectionName: currentNft.collectionName,
     };
 
     await api.post("raffle", body);
-  }, [cosmWasmClient, accounts, offlineSigner, signingCosmWasmClient]);
+
+    toast.dismiss();
+
+    toast.success("Success!");
+  }, [
+    cosmWasmClient,
+    accounts,
+    offlineSigner,
+    signingCosmWasmClient,
+    currentNft,
+    endDate
+  ]);
+
+  const addDays = (days: number) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + days);
+    setEndDate(newDate);
+  };
 
   return (
     <>
@@ -125,8 +144,8 @@ export default function Create() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col mt-5 gap-2 bg-card_bg p-5 rounded-lg w-full  md:w-1/2">
-          <div className="flex gap-5 flex-col md:flex-row">
+        <div className="flex justify-between flex-col mt-5 gap-2 bg-card_bg p-5 rounded-lg w-full  md:w-1/2">
+          <div className="flex gap-5 justify-between flex-col md:flex-row">
             <div className="flex flex-col w-full gap-2">
               <label className="text-black text-lg">
                 Ticket Price <span className="text-red-700">*</span>
@@ -145,25 +164,52 @@ export default function Create() {
               <label className="text-black text-lg">
                 Raffle endd date <span className="text-red-700">*</span>
               </label>
-              <input
-                type="datetime-local"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="bg-primary border border-white border-opacity-20 rounded-lg py-2 focus:outline-none text-white text-opacity-90 px-4"
-              />
+              <div className="flex w-full gap-5">
+                <button
+                  onClick={() => addDays(1)}
+                  className="bg-primary py-2 px-4 rounded-lg"
+                >
+                  1 day
+                </button>
+                <button
+                  onClick={() => addDays(3)}
+                  className="bg-primary py-2 px-3 rounded-lg"
+                >
+                  3 days
+                </button>
+                <button
+                  onClick={() => addDays(5)}
+                  className="bg-primary py-2 px-3 rounded-lg"
+                >
+                  5 days
+                </button>
+                <button
+                  onClick={() => addDays(7)}
+                  className="bg-primary py-2 px-3 rounded-lg"
+                >
+                  7 days
+                </button>
+              </div>
             </div>
           </div>
-          <div className="flex items-center mt-1">
-            <input
-              id="link-checkbox"
-              type="checkbox"
-              checked={terms}
-              onChange={() => setTerms((prev) => !prev)}
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            />
-            <label className="ms-2 text-sm font-medium text-black">
-              I accept with the terms and conditions above.
-            </label>
+          <div className="flex items-center justify-between mt-1">
+            <div>
+              <input
+                id="link-checkbox"
+                type="checkbox"
+                checked={terms}
+                onChange={() => setTerms((prev) => !prev)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label className="ms-2 text-sm font-medium text-black">
+                I accept with the terms and conditions above.
+              </label>
+            </div>
+            <div>
+              <span className="text-black">
+                {formatReadableDate(endDate.toISOString())}
+              </span>
+            </div>
           </div>
 
           <button

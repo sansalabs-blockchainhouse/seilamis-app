@@ -17,7 +17,7 @@ interface IItem {
 }
 
 export default function Home() {
-  const { data: raffles, refetch } = useQuery({
+  const { data: raffles } = useQuery({
     queryKey: ["raffles-list"],
     queryFn: (): Promise<IItem[]> =>
       api.get(`raffle`).then((response) => response.data),
@@ -31,25 +31,29 @@ export default function Home() {
         FEATURED RAFFLES
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-        {raffles.map((nft, index) => (
-          <Card
-            key={index}
-            id={nft.id}
-            imgUrl={nft.image}
-            name={nft.name}
-            startTime={nft.startTime}
-            endTime={nft.endTime}
-            collectionName={nft.collectionName}
-            price={nft.price}
-            ticketsSold={nft.ticketsSold}
-            creator={nft.creator}
-          />
-        ))}
+        {raffles
+          .sort((a, b) => b.ticketsSold - a.ticketsSold)
+          .slice(0, 3)
+          .map((nft, index) => (
+            <Card
+              key={index}
+              id={nft.id}
+              imgUrl={nft.image}
+              name={nft.name}
+              startTime={nft.startTime}
+              endTime={nft.endTime}
+              collectionName={nft.collectionName}
+              price={nft.price}
+              ticketsSold={nft.ticketsSold}
+              creator={nft.creator}
+            />
+          ))}
       </div>
       <span className="text-5xl md:text-7xl text-primary font-extrabold text-center select-none mt-10">
         RAFFLES
       </span>
-      <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box">
+      {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles.map((nft, index) => (
           <div key={index} className="carousel-item">
             <Card

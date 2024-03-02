@@ -64,6 +64,7 @@ export default function Modal({
           return {
             tokenId: tokenId,
             contract: currentCollection.address,
+            collectionName: currentCollection.name,
             nftData: data,
           };
         });
