@@ -1,6 +1,6 @@
 "use client";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Amatic_SC, Inter } from "next/font/google";
 import "./globals.css";
 import { SeiWalletProvider } from "@sei-js/react";
 import Navbar from "@/components/Navbar";

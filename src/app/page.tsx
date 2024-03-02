@@ -2,6 +2,7 @@
 import Card from "@/components/Card";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
+import { Amatic_SC } from "next/font/google";
 
 interface IItem {
   id: string;
@@ -16,6 +17,8 @@ interface IItem {
   ticketsSold: number;
 }
 
+const amantic = Amatic_SC({ weight: '700', subsets: ["latin"],  });
+
 export default function Home() {
   const { data: raffles } = useQuery({
     queryKey: ["raffles-list"],
@@ -27,7 +30,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center">
-      <span className="uppercase text-5xl md:text-7xl text-primary font-extrabold text-center select-none">
+      <span className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}>
         ending soon
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
@@ -52,7 +55,7 @@ export default function Home() {
             />
           ))}
       </div>
-      <span className="uppercase text-5xl md:text-7xl text-primary font-extrabold text-center select-none mt-10">
+      <span className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}>
         most popular
       </span>
       {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
