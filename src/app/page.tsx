@@ -56,7 +56,6 @@ export default function Home() {
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles
           .sort((a, b) => b.ticketsSold - a.ticketsSold)
-          .slice(0, 3)
           .map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
