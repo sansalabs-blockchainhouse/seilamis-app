@@ -1,10 +1,11 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { MdNotInterested } from "react-icons/md";
-import { collections } from "@/utils/verifiedCollections";
 import { useCosmWasmClient, useWallet } from "@sei-js/react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/services/api";
 
 interface IModalProps {
   setCurrentNft: React.Dispatch<React.SetStateAction<undefined>>;
@@ -31,6 +32,15 @@ export default function Modal({
   const [currentCollection, setCurrentCollection] = useState<
     ICollection | undefined
   >();
+
+  const { data: collections } = useQuery({
+    queryKey: ["collections-verified"],
+    queryFn: (): Promise<ICollection[]> =>
+      api.get(`raffle-verified`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
+
 
   const getNfts = useCallback(async () => {
     if (cosmWasmClient && currentCollection) {
