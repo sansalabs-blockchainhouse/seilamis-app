@@ -11,8 +11,11 @@ import {
   useSigningCosmWasmClient,
   useCosmWasmClient,
 } from "@sei-js/react";
-import { api } from "@/services/api";
 import { formatReadableDate } from "@/utils/formatDate";
+import { toUtf8 } from "@cosmjs/encoding";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { api } from "@/services/api";
+
 
 export default function Create() {
   const { offlineSigner, accounts } = useWallet();
@@ -35,34 +38,49 @@ export default function Create() {
     if (!offlineSigner || !signingCosmWasmClient) return;
 
     if (days === 0) {
-      return toast.error("Select a valid raffle duration!")
+      return toast.error("Select a valid raffle duration!");
     }
 
     const fee = calculateFee(228605, "0.1usei");
 
     const msg = {
-      transfer_nft: {
-        recipient: process.env.NEXT_PUBLIC_SEILAMIS_WALLET,
-        token_id: currentNft.tokenId,
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: {
+        sender: accounts[0].address,
+        contract: currentNft.contract,
+        msg: toUtf8(
+          JSON.stringify({
+            transfer_nft: {
+              recipient: process.env.NEXT_PUBLIC_SEILAMIS_WALLET,
+              token_id: currentNft.tokenId,
+            },
+          })
+        ),
       },
     };
     toast.loading("Sending...");
 
-    const result = await signingCosmWasmClient.execute(
+    const response = await signingCosmWasmClient.sign(
       accounts[0].address,
-      currentNft.contract,
-      msg,
-      fee
+      [msg],
+      fee,
+      ""
     );
+
+    const txRaw = TxRaw.fromPartial({
+      bodyBytes: response.bodyBytes,
+      authInfoBytes: response.authInfoBytes,
+      signatures: response.signatures,
+    });
+
+    const txBytes = TxRaw.encode(txRaw).finish();
 
     const body = {
       creator: accounts[0].address,
-      tx: result.transactionHash,
+      tx: Object.values(txBytes),
       startTime: new Date().toISOString(),
       endTime: new Date(endDate).toISOString(),
       price,
-      name: currentNft.nftData.name,
-      image: currentNft.nftData.image,
       collectionName: currentNft.collectionName,
     };
 
@@ -78,7 +96,7 @@ export default function Create() {
     signingCosmWasmClient,
     currentNft,
     endDate,
-    days
+    days,
   ]);
 
   const addDays = (days: number) => {

@@ -10,6 +10,8 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+
 
 interface ICard {
   id: string;
@@ -95,15 +97,23 @@ export default function Card({
       ];
 
 
-      const response = await signingClient.signAndBroadcast(
+      const response = await signingClient.sign(
         accounts[0].address,
         messages,
-        fee
+        fee,
+        ""
       );
 
+      const txRaw = TxRaw.fromPartial({
+        bodyBytes: response.bodyBytes,
+        authInfoBytes: response.authInfoBytes,
+        signatures: response.signatures,
+      });
+
+      const txBytes = TxRaw.encode(txRaw).finish();
       const body = {
         wallet: accounts[0].address,
-        tx: response?.transactionHash,
+        tx: Object.values(txBytes),
         amount: 1,
         raffleId: id,
       };

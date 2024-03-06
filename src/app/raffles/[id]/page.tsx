@@ -10,6 +10,7 @@ import { calculateFee } from "@cosmjs/stargate";
 import BigNumber from "bignumber.js";
 import { useWallet, useSigningClient } from "@sei-js/react";
 import toast from "react-hot-toast";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 interface IItem {
   id: string;
@@ -91,7 +92,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
       toast.loading("Sending...");
       const fee = calculateFee(200000, "0.1usei");
-      const totalPrice = raffle.price * 1e6 * Number(amount)
+      const totalPrice = raffle.price * 1e6 * Number(amount);
 
       const messages = [
         {
@@ -100,7 +101,10 @@ export default function Raffle({ params }: { params: { id: string } }) {
             fromAddress: accounts[0].address,
             toAddress: raffle.creator,
             amount: [
-              { denom: "usei", amount: new BigNumber(totalPrice * 0.97).toString() },
+              {
+                denom: "usei",
+                amount: new BigNumber(totalPrice * 0.97).toString(),
+              },
             ],
           },
         },
@@ -110,22 +114,33 @@ export default function Raffle({ params }: { params: { id: string } }) {
             fromAddress: accounts[0].address,
             toAddress: "sei13hpc6h3dcd705hyugt9wac0dsyyp0fvg06c7dv",
             amount: [
-              { denom: "usei", amount: new BigNumber(totalPrice * 0.03).toString() },
+              {
+                denom: "usei",
+                amount: new BigNumber(totalPrice * 0.03).toString(),
+              },
             ],
           },
         },
       ];
 
-      const response = await signingClient.signAndBroadcast(
+      const response = await signingClient.sign(
         accounts[0].address,
         messages,
-        fee
+        fee,
+        ""
       );
 
+      const txRaw = TxRaw.fromPartial({
+        bodyBytes: response.bodyBytes,
+        authInfoBytes: response.authInfoBytes,
+        signatures: response.signatures,
+      });
+
+      const txBytes = TxRaw.encode(txRaw).finish();
 
       const body = {
         wallet: accounts[0].address,
-        tx: response?.transactionHash,
+        tx: Object.values(txBytes),
         amount: Number(amount),
         raffleId: raffle.id,
       };
