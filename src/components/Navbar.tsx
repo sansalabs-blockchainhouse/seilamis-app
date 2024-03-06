@@ -18,7 +18,7 @@ export default function Navbar() {
             </li>
           </ul>
         </div>
-        <Link href={"/"}>
+        <Link href={"https://www.blckmrkt.io/"}>
           <img src="/logo.png" className="h-32" />
         </Link>
       </div>
