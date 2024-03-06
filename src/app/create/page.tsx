@@ -97,6 +97,7 @@ export default function Create() {
     currentNft,
     endDate,
     days,
+    price
   ]);
 
   const addDays = (days: number) => {
