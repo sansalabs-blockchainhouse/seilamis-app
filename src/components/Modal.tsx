@@ -48,7 +48,7 @@ export default function Modal({
         setIsLoading(true);
         const queryMsg = {
           tokens: {
-            owner: 'sei10jf68rlach5jv3xzfnc0cjqjldx8jkrxg9tkcv',
+            owner: accounts[0].address,
             limit: 100
           },
         };
