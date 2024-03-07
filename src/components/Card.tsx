@@ -12,7 +12,6 @@ import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-
 interface ICard {
   id: string;
   imgUrl: string;
@@ -58,7 +57,6 @@ export default function Card({
     }
   }, [startTime, endTime, winner]);
 
-
   const handleBuy = useCallback(async () => {
     try {
       if (!accounts.length) {
@@ -71,7 +69,7 @@ export default function Card({
 
       toast.loading("Sending...");
       const fee = calculateFee(200000, "0.1usei");
-      const totalPrice = price * 1e6 * Number(1)
+      const totalPrice = price * 1e6 * Number(1);
 
       const messages = [
         {
@@ -80,7 +78,10 @@ export default function Card({
             fromAddress: accounts[0].address,
             toAddress: creator,
             amount: [
-              { denom: "usei", amount: new BigNumber(totalPrice * 0.97).toString() },
+              {
+                denom: "usei",
+                amount: new BigNumber(totalPrice * 0.97).toString(),
+              },
             ],
           },
         },
@@ -90,12 +91,14 @@ export default function Card({
             fromAddress: accounts[0].address,
             toAddress: "sei13hpc6h3dcd705hyugt9wac0dsyyp0fvg06c7dv",
             amount: [
-              { denom: "usei", amount: new BigNumber(totalPrice * 0.03).toString() },
+              {
+                denom: "usei",
+                amount: new BigNumber(totalPrice * 0.03).toString(),
+              },
             ],
           },
         },
       ];
-
 
       const response = await signingClient.sign(
         accounts[0].address,
@@ -127,7 +130,7 @@ export default function Card({
         queryKey: ["raffles-list"],
       });
     } catch (error: any) {
-        console.log(error)
+      console.log(error);
       toast.dismiss();
 
       if (error.name === "AxiosError") {
@@ -165,13 +168,21 @@ export default function Card({
           <span>Tickets</span>
           <span className="font-bold">{ticketsSold}</span>
         </div>
-        <div className="flex justify-between text-black">
-          <span>Ends in</span>
-          <span>{timeDifference}</span>
-        </div>
+        {!winner && (
+          <div className="flex justify-between text-black">
+            <span>Ends in</span>
+            <span>{timeDifference}</span>
+          </div>
+        )}
       </div>
       <div className="flex justify-between px-3 py-3">
-        <button onClick={handleBuy} className="bg-primary rounded-lg p-3 w-44 hover:">Buy</button>
+        <button
+          disabled={winner ? false : true}
+          onClick={handleBuy}
+          className="bg-primary rounded-lg p-3 w-44 hover:"
+        >
+          Buy
+        </button>
         <Link
           href={`/raffles/${id}`}
           className="flex items-center justify-center bg-primary rounded-lg p-3 w-20"

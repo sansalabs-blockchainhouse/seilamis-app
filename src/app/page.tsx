@@ -37,6 +37,7 @@ export default function Home() {
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
         {raffles
+          ?.filter((item) => !item.winner)
           .sort(
             (a: any, b: any) =>
               (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
@@ -66,6 +67,7 @@ export default function Home() {
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles
           .sort((a, b) => b.ticketsSold - a.ticketsSold)
+          ?.filter((item) => !item.winner)
           .map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
@@ -104,6 +106,7 @@ export default function Home() {
                 price={nft.price}
                 ticketsSold={nft.ticketsSold}
                 creator={nft.creator}
+                winner={nft.winner}
               />
             </div>
           ))}
