@@ -16,7 +16,6 @@ import { toUtf8 } from "@cosmjs/encoding";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { api } from "@/services/api";
 
-
 export default function Create() {
   const { offlineSigner, accounts } = useWallet();
   const { signingCosmWasmClient } = useSigningCosmWasmClient();
@@ -33,62 +32,70 @@ export default function Create() {
   const [terms, setTerms] = useState<boolean>(false);
 
   const handleCreateRaffle = useCallback(async () => {
-    if (!cosmWasmClient || !currentNft) return;
+    try {
+      if (!cosmWasmClient || !currentNft) return;
 
-    if (!offlineSigner || !signingCosmWasmClient) return;
+      if (!offlineSigner || !signingCosmWasmClient) return;
 
-    if (days === 0) {
-      return toast.error("Select a valid raffle duration!");
+      if (days === 0) {
+        return toast.error("Select a valid raffle duration!");
+      }
+
+      const fee = calculateFee(228605, "0.1usei");
+
+      const msg = {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: {
+          sender: accounts[0].address,
+          contract: currentNft.contract,
+          msg: toUtf8(
+            JSON.stringify({
+              transfer_nft: {
+                recipient: process.env.NEXT_PUBLIC_SEILAMIS_WALLET,
+                token_id: currentNft.tokenId,
+              },
+            })
+          ),
+        },
+      };
+      toast.loading("Sending...");
+
+      const response = await signingCosmWasmClient.sign(
+        accounts[0].address,
+        [msg],
+        fee,
+        ""
+      );
+
+      const txRaw = TxRaw.fromPartial({
+        bodyBytes: response.bodyBytes,
+        authInfoBytes: response.authInfoBytes,
+        signatures: response.signatures,
+      });
+
+      const txBytes = TxRaw.encode(txRaw).finish();
+
+      const body = {
+        creator: accounts[0].address,
+        tx: Object.values(txBytes),
+        startTime: new Date().toISOString(),
+        endTime: new Date(endDate).toISOString(),
+        price,
+        collectionName: currentNft.collectionName,
+      };
+
+      await api.post("raffle", body);
+
+      toast.dismiss();
+
+      toast.success("Success!");
+    } catch (error: any) {
+      if (error.name === "AxiosError") {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong");
+      }
     }
-
-    const fee = calculateFee(228605, "0.1usei");
-
-    const msg = {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: {
-        sender: accounts[0].address,
-        contract: currentNft.contract,
-        msg: toUtf8(
-          JSON.stringify({
-            transfer_nft: {
-              recipient: process.env.NEXT_PUBLIC_SEILAMIS_WALLET,
-              token_id: currentNft.tokenId,
-            },
-          })
-        ),
-      },
-    };
-    toast.loading("Sending...");
-
-    const response = await signingCosmWasmClient.sign(
-      accounts[0].address,
-      [msg],
-      fee,
-      ""
-    );
-
-    const txRaw = TxRaw.fromPartial({
-      bodyBytes: response.bodyBytes,
-      authInfoBytes: response.authInfoBytes,
-      signatures: response.signatures,
-    });
-
-    const txBytes = TxRaw.encode(txRaw).finish();
-
-    const body = {
-      creator: accounts[0].address,
-      tx: Object.values(txBytes),
-      startTime: new Date().toISOString(),
-      endTime: new Date(endDate).toISOString(),
-      price,
-      collectionName: currentNft.collectionName,
-    };
-
-    await api.post("raffle", body);
-
-    toast.dismiss();
-
-    toast.success("Success!");
   }, [
     cosmWasmClient,
     accounts,
@@ -97,7 +104,7 @@ export default function Create() {
     currentNft,
     endDate,
     days,
-    price
+    price,
   ]);
 
   const addDays = (days: number) => {
