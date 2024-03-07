@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { formatWallet } from "@/utils/formatWallet";
 
 interface ICard {
   id: string;
@@ -172,6 +173,12 @@ export default function Card({
           <div className="flex justify-between text-black">
             <span>Ends in</span>
             <span>{timeDifference}</span>
+          </div>
+        )}
+        {winner && (
+          <div className="flex justify-between text-black">
+            <span>Winner</span>
+            <span>{formatWallet(winner)}</span>
           </div>
         )}
       </div>
