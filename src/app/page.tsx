@@ -17,7 +17,7 @@ interface IItem {
   ticketsSold: number;
 }
 
-const amantic = Amatic_SC({ weight: '700', subsets: ["latin"],  });
+const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
 export default function Home() {
   const { data: raffles } = useQuery({
@@ -30,7 +30,9 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center">
-      <span className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}>
+      <span
+        className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
         ending soon
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
@@ -55,7 +57,9 @@ export default function Home() {
             />
           ))}
       </div>
-      <span className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}>
+      <span
+        className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
         most popular
       </span>
       {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
@@ -63,6 +67,32 @@ export default function Home() {
         {raffles
           .sort((a, b) => b.ticketsSold - a.ticketsSold)
           .map((nft, index) => (
+            <div key={index} className="carousel-item">
+              <Card
+                id={nft.id}
+                imgUrl={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.collectionName}
+                price={nft.price}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+              />
+            </div>
+          ))}
+      </div>
+      <span
+        className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
+        ended
+      </span>
+      {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {raffles
+          ?.reverse()
+          ?.filter((item) => item.winner)
+          ?.map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
                 id={nft.id}
