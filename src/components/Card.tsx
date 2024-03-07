@@ -184,7 +184,7 @@ export default function Card({
       </div>
       <div className="flex justify-between px-3 py-3">
         <button
-          disabled={winner ? false : true}
+          disabled={winner ? true : false}
           onClick={handleBuy}
           className="bg-primary rounded-lg p-3 w-44 hover:"
         >
