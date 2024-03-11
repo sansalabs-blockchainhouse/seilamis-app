@@ -12,8 +12,7 @@ import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { formatWallet } from "@/utils/formatWallet";
-import CopyToClipboard from 'react-copy-to-clipboard';
-
+import CopyToClipboard from "react-copy-to-clipboard";
 
 interface ICard {
   id: string;
@@ -182,28 +181,34 @@ export default function Card({
             <span>Winner</span>
             <CopyToClipboard
               text={winner}
-              onCopy={() => toast.success('Successfully copied to clipboard')}
+              onCopy={() => toast.success("Successfully copied to clipboard")}
             >
-
-            <span className="cursor-pointer">{formatWallet(winner)}</span>
+              <span className="cursor-pointer">{formatWallet(winner)}</span>
             </CopyToClipboard>
           </div>
         )}
       </div>
       <div className="flex justify-between px-3 py-3">
-        <button
-          disabled={winner ? true : false}
-          onClick={handleBuy}
-          className="bg-primary rounded-lg p-3 w-44 hover:"
-        >
-          Buy
-        </button>
-        <Link
-          href={`/raffles/${id}`}
-          className="flex items-center justify-center bg-primary rounded-lg p-3 w-20"
-        >
-          View
-        </Link>
+        {!winner && (
+          <>
+            <button
+              disabled={winner ? true : false}
+              onClick={handleBuy}
+              className="bg-primary rounded-lg p-3 w-44 hover:"
+            >
+              Buy
+            </button>
+            <Link
+              href={`/raffles/${id}`}
+              className="flex items-center justify-center bg-primary rounded-lg p-3 w-20"
+            >
+              View
+            </Link>
+          </>
+        )}
+        {winner && (
+          <button className="bg-primary rounded-lg p-3 w-full">Ended</button>
+        )}
       </div>
     </div>
   );
