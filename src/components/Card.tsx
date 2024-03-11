@@ -185,7 +185,7 @@ export default function Card({
               onCopy={() => toast.success('Successfully copied to clipboard')}
             >
 
-            <span>{formatWallet(winner)}</span>
+            <span className="cursor-pointer">{formatWallet(winner)}</span>
             </CopyToClipboard>
           </div>
         )}
