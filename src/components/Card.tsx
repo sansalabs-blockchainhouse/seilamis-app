@@ -12,6 +12,8 @@ import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { formatWallet } from "@/utils/formatWallet";
+import CopyToClipboard from 'react-copy-to-clipboard';
+
 
 interface ICard {
   id: string;
@@ -178,7 +180,13 @@ export default function Card({
         {winner && (
           <div className="flex justify-between text-black">
             <span>Winner</span>
+            <CopyToClipboard
+              text={winner}
+              onCopy={() => toast.success('Successfully copied to clipboard')}
+            >
+
             <span>{formatWallet(winner)}</span>
+            </CopyToClipboard>
           </div>
         )}
       </div>
