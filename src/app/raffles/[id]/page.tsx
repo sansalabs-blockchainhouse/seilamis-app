@@ -90,6 +90,10 @@ export default function Raffle({ params }: { params: { id: string } }) {
         return toast.error("Something went wrong");
       }
 
+      if (raffle.winner) {
+        return toast.error("Raffle is already finished");
+      }
+
       toast.loading("Sending...");
       const fee = calculateFee(200000, "0.1usei");
       const totalPrice = raffle.price * 1e6 * Number(amount);
@@ -200,6 +204,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     className="w-20 text-xl text-center h-16 rounded-lg bg-primary border border-white border-opacity-20 py-2 focus:outline-none text-white text-opacity-90"
                   />
                   <button
+                    disabled={raffle.winner ? true : false}
                     onClick={() => handleBuy()}
                     className="flex-1 px-6 py-3 h-16 bg-primary rounded-lg text-white hover:opacity-70 font-bold"
                   >
