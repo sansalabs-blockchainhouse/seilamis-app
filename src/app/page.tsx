@@ -92,7 +92,7 @@ export default function Home() {
       {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles
-          ?.reverse()
+          .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
           ?.filter((item) => item.winner)
           ?.map((nft, index) => (
             <div key={index} className="carousel-item">
