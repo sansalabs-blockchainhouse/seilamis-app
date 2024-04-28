@@ -314,9 +314,16 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     <span className="text-white font-bold text-opacity-50 text-lg">
                       Raffler
                     </span>
-                    <span className="text-white font-bold text-xl">
-                      {raffle.creator.slice(0, 5)}...
-                    </span>
+                    <CopyToClipboard
+                      text={raffle.creator}
+                      onCopy={() =>
+                        toast.success("Successfully copied to clipboard")
+                      }
+                    >
+                      <span className="text-white font-bold text-xl">
+                        {raffle.creator.slice(0, 5)}...
+                      </span>
+                    </CopyToClipboard>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-white font-bold text-opacity-50 text-lg">
