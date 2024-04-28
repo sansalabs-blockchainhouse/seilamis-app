@@ -11,6 +11,7 @@ import BigNumber from "bignumber.js";
 import { useWallet, useSigningClient } from "@sei-js/react";
 import toast from "react-hot-toast";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 interface IItem {
   id: string;
@@ -345,9 +346,16 @@ export default function Raffle({ params }: { params: { id: string } }) {
                   <tbody className="">
                     {tickets.map((item, index) => (
                       <tr className="bg-table_bg" key={index}>
-                        <th className="px-6 py-4">
-                          {item.wallet.slice(0, 15) + "..."}
-                        </th>
+                        <CopyToClipboard
+                          text={item.wallet}
+                          onCopy={() =>
+                            toast.success("Successfully copied to clipboard")
+                          }
+                        >
+                          <th className="px-6 py-4 cursor-pointer">
+                            {item.wallet.slice(0, 15) + "..."}
+                          </th>
+                        </CopyToClipboard>
                         <td className="px-6 py-4">{item.amount}</td>
                       </tr>
                     ))}
