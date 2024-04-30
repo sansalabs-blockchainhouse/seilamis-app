@@ -219,8 +219,8 @@ export default function Raffle({ params }: { params: { id: string } }) {
                   Terms and conditions
                 </span>
                 <span className="text-white text-base font-normal">
-                  1. All NFT prizes are held by raffle in escrow and can be
-                  claimed by the winner or creator once the draw is done.
+                  1. All NFT prizes are held by raffle in escrow and and will be
+                  sent automatically after winner is drawn.
                 </span>
                 <span className="text-white text-base font-normal">
                   2. Raffle tickets cannot be refunded once bought.
