@@ -47,7 +47,7 @@ export default function Modal({
         setIsLoading(true);
         const queryMsg = {
           tokens: {
-            owner: "sei1lkc9xattd5ld6kqjtuxqvplg7x04k8udu3zpd4",
+            owner: accounts[0].address,
             limit: 100,
           },
         };
@@ -88,7 +88,7 @@ export default function Modal({
             // Se a regex não encontrar uma correspondência, retornar a URL original
           }
 
-          data.image = imageUrl
+          data.image = imageUrl;
 
           return {
             tokenId: tokenId,
