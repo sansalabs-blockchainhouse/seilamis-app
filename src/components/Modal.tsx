@@ -41,15 +41,14 @@ export default function Modal({
     initialData: [],
   });
 
-
   const getNfts = useCallback(async () => {
     if (cosmWasmClient && currentCollection) {
       try {
         setIsLoading(true);
         const queryMsg = {
           tokens: {
-            owner: accounts[0].address,
-            limit: 100
+            owner: "sei1lkc9xattd5ld6kqjtuxqvplg7x04k8udu3zpd4",
+            limit: 100,
           },
         };
 
@@ -71,6 +70,25 @@ export default function Modal({
           );
 
           const { data } = await axios.get(tokenInfo.token_uri);
+
+          const regex = /ipfs:\/\/([^/]+)\/(.+)/;
+
+          var match = data.image.match(regex);
+          let imageUrl = "";
+
+          if (match) {
+            // Extrair o hash do IPFS e o caminho do arquivo
+            const ipfsHash = match[1];
+            const filePath = match[2];
+            // Montar a nova URL com o padrão especificado
+            imageUrl = "https://ipfs.io/ipfs/" + ipfsHash + "/" + filePath;
+            // Retornar a nova URL
+          } else {
+            imageUrl = data.image;
+            // Se a regex não encontrar uma correspondência, retornar a URL original
+          }
+
+          data.image = imageUrl
 
           return {
             tokenId: tokenId,
