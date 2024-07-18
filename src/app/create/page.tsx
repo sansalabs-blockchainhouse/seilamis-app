@@ -15,6 +15,12 @@ import { formatReadableDate } from "@/utils/formatDate";
 import { toUtf8 } from "@cosmjs/encoding";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { api } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
+
+interface IWallets {
+  id: string;
+  address: string;
+}
 
 export default function Create() {
   const { offlineSigner, accounts } = useWallet();
@@ -30,6 +36,15 @@ export default function Create() {
   const [days, setDays] = useState(0);
 
   const [terms, setTerms] = useState<boolean>(false);
+  const [isVerified, setIsVerified] = useState<boolean>(false);
+
+  const { data: wallets } = useQuery({
+    queryKey: ["wallets-list"],
+    queryFn: (): Promise<IWallets[]> =>
+      api.get(`verified`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
 
   const handleCreateRaffle = useCallback(async () => {
     try {
@@ -82,6 +97,7 @@ export default function Create() {
         endTime: new Date(endDate).toISOString(),
         price,
         collectionName: currentNft.collectionName,
+        isVerifiedWallet: isVerified,
       };
 
       await api.post("raffle", body);
@@ -105,6 +121,7 @@ export default function Create() {
     endDate,
     days,
     price,
+    isVerified,
   ]);
 
   const addDays = (days: number) => {
@@ -253,17 +270,35 @@ export default function Create() {
             </div>
           </div>
           <div className="flex items-center justify-between mt-1">
-            <div>
-              <input
-                id="link-checkbox"
-                type="checkbox"
-                checked={terms}
-                onChange={() => setTerms((prev) => !prev)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label className="ms-2 text-sm font-medium text-black">
-                I accept with the terms and conditions above.
-              </label>
+            <div className="flex flex-col gap-5">
+              <div>
+                <input
+                  id="link-checkbox"
+                  type="checkbox"
+                  checked={terms}
+                  onChange={() => setTerms((prev) => !prev)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label className="ms-2 text-sm font-medium text-black">
+                  I accept with the terms and conditions above.
+                </label>
+              </div>
+              {wallets.length > 0 &&
+                accounts.length > 0 &&
+                wallets.find((w) => w.address === accounts[0].address) && (
+                  <div>
+                    <input
+                      id="link-checkbox"
+                      type="checkbox"
+                      checked={isVerified}
+                      onChange={() => setIsVerified((prev) => !prev)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label className="ms-2 text-sm font-medium text-black">
+                      Is verified?
+                    </label>
+                  </div>
+                )}
             </div>
             <div>
               <span className="text-black">

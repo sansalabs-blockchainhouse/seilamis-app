@@ -15,6 +15,7 @@ interface IItem {
   endTime: string;
   winner?: string;
   ticketsSold: number;
+  isVerified?: boolean;
 }
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
@@ -55,6 +56,7 @@ export default function Home() {
               price={nft.price}
               ticketsSold={nft.ticketsSold}
               creator={nft.creator}
+              isVerified={nft.isVerified}
             />
           ))}
       </div>
@@ -80,6 +82,7 @@ export default function Home() {
                 price={nft.price}
                 ticketsSold={nft.ticketsSold}
                 creator={nft.creator}
+                isVerified={nft.isVerified}
               />
             </div>
           ))}
@@ -107,6 +110,7 @@ export default function Home() {
                 ticketsSold={nft.ticketsSold}
                 creator={nft.creator}
                 winner={nft.winner}
+                isVerified={nft.isVerified}
               />
             </div>
           ))}

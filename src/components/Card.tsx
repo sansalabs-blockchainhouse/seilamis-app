@@ -25,6 +25,7 @@ interface ICard {
   creator: string;
   endTime: string;
   winner?: string;
+  isVerified?: boolean;
 }
 
 export default function Card({
@@ -38,6 +39,7 @@ export default function Card({
   winner,
   creator,
   id,
+  isVerified,
 }: ICard) {
   const { accounts } = useWallet();
 
@@ -144,7 +146,11 @@ export default function Card({
   }, [accounts, signingClient]);
 
   return (
-    <div className="rounded-xl border border-primary">
+    <div
+      className={`rounded-xl ${
+        isVerified ? "border-2 border-sei relative" : "border border-primary"
+      }`}
+    >
       <div
         className="flex flex-col w-7 bg-transparent pb-3 border-transparent rounded-t-xl relative"
         style={{
@@ -153,7 +159,11 @@ export default function Card({
           width: "18rem",
           height: "18rem",
         }}
-      ></div>
+      >
+        {isVerified && (
+          <img src="/hand.png" className="h-14 absolute top-2 right-2" />
+        )}
+      </div>
       <div className="flex flex-col px-3 py-3">
         <div className="bg-primary flex w-fit p-1 items-center gap-2 rounded-lg text-sm">
           <span>{collectionName}</span>

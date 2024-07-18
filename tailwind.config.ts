@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       colors: {
         primary: "#AA6938",
+        sei: '#9E1E1A'
       },
       backgroundImage: {
         "sky": "url('/sky.webp')",
