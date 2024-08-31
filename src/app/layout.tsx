@@ -23,7 +23,7 @@ export default function RootLayout({
           chainConfiguration={{
             chainId: "pacific-1",
             restUrl: "https://sei-api.polkachu.com/",
-            rpcUrl: "https://flashy-responsive-river.sei-pacific.quiknode.pro/d5ca38e26362884d653795d05be43ecc3b53287b/",
+            rpcUrl: "https://sei-rpc.polkachu.com/'",
           }}
           wallets={["compass", "fin", "keplr", "leap"]}
         >
