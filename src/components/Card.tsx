@@ -63,6 +63,8 @@ export default function Card({
 
   const handleBuy = useCallback(async () => {
     try {
+      if (winner) return
+
       if (!accounts.length) {
         return toast.error("Connect your wallet");
       }
@@ -143,13 +145,12 @@ export default function Card({
         toast.error("Something went wrong");
       }
     }
-  }, [accounts, signingClient]);
+  }, [accounts]);
 
   return (
     <div
-      className={`rounded-xl ${
-        isVerified ? "border-2 border-sei relative" : "border border-primary"
-      }`}
+      className={`rounded-xl ${isVerified ? "border-2 border-sei relative" : "border border-primary"
+        }`}
     >
       <div
         className="flex flex-col w-7 bg-transparent pb-3 border-transparent rounded-t-xl relative"

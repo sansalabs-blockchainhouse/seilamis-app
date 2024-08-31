@@ -97,6 +97,7 @@ export default function Home() {
         {raffles
           .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
           ?.filter((item) => item.winner)
+          .slice(0, 12) 
           ?.map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
