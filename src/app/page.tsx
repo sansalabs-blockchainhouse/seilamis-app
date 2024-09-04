@@ -24,6 +24,7 @@ const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
 
 const getRaffles = async () => {
+  await Promise.all([new Promise(resolve => setTimeout(resolve, 4000))]);
   const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle');
   const raffles: IItem[] = await res.json();
   return raffles;
