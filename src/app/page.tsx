@@ -46,24 +46,54 @@ export default async function Home() {
 
 
   return (
-    <Suspense fallback={<Loading />}>
-      <main className="flex min-h-screen flex-col items-center bg-sky bg-no-repeat bg-contain bg-white">
-        <Navbar />
+    // <Suspense fallback={<Loading />}>
+    <main className="flex min-h-screen flex-col items-center bg-sky bg-no-repeat bg-contain bg-white">
+      <Navbar />
 
-        <span
-          className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          ending soon
-        </span>
-        <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-          {raffles
-            ?.filter((item) => !item.winner)
-            .sort(
-              (a: any, b: any) =>
-                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
-            )
-            .slice(0, 3)
-            .map((nft, index) => (
+      <span
+        className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
+        ending soon
+      </span>
+      <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
+        {raffles
+          ?.filter((item) => !item.winner)
+          .sort(
+            (a: any, b: any) =>
+              (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
+          )
+          .slice(0, 3)
+          .map((nft, index) => (
+            <Suspense key={index} fallback={<div className="w-96 h-96 bg-black"></div>}>
+              <Card
+
+                id={nft.id}
+                imgUrl={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.collectionName}
+                price={nft.price}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+                isVerified={nft.isVerified}
+              />
+            </Suspense>
+          ))}
+      </div>
+
+      <span
+        className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
+        most popular
+      </span>
+
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {raffles
+          .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
+          ?.filter((item) => !item.winner)
+          .map((nft, index) => (
+            <div key={index} className="carousel-item">
               <Card
                 key={index}
                 id={nft.id}
@@ -77,72 +107,44 @@ export default async function Home() {
                 creator={nft.creator}
                 isVerified={nft.isVerified}
               />
-            ))}
-        </div>
+            </div>
+          ))}
+      </div>
+      <span
+        className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
+        ended
+      </span>
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {raffles
+          .sort((a, b) => {
+            const dateA = new Date(a.endTime).getTime();
+            const dateB = new Date(b.endTime).getTime();
+            return dateB - dateA;
+          })
+          ?.filter((item) => item.winner)
+          .slice(0, 12)
+          ?.map((nft, index) => (
+            <div key={index} className="carousel-item">
+              <Card
+                key={index}
+                id={nft.id}
+                imgUrl={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.collectionName}
+                price={nft.price}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+                winner={nft.winner}
+                isVerified={nft.isVerified}
+              />
+            </div>
+          ))}
+      </div>
 
-        <span
-          className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          most popular
-        </span>
-
-        <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-          {raffles
-            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
-            ?.filter((item) => !item.winner)
-            .map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <Card
-                  key={index}
-                  id={nft.id}
-                  imgUrl={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.collectionName}
-                  price={nft.price}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  isVerified={nft.isVerified}
-                />
-              </div>
-            ))}
-        </div>
-        <span
-          className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          ended
-        </span>
-        <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-          {raffles
-            .sort((a, b) => {
-              const dateA = new Date(a.endTime).getTime();
-              const dateB = new Date(b.endTime).getTime();
-              return dateB - dateA;
-            })
-            ?.filter((item) => item.winner)
-            .slice(0, 12)
-            ?.map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <Card
-                  key={index}
-                  id={nft.id}
-                  imgUrl={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.collectionName}
-                  price={nft.price}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  winner={nft.winner}
-                  isVerified={nft.isVerified}
-                />
-              </div>
-            ))}
-        </div>
-
-      </main>
-    </Suspense>
+    </main>
+    // </Suspense>
   );
 }
