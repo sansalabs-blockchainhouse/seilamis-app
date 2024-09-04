@@ -145,7 +145,7 @@ export default function Card({
         toast.error("Something went wrong");
       }
     }
-  }, [accounts]);
+  }, [accounts, signingClient]);
 
   return (
     <div
