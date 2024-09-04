@@ -23,11 +23,11 @@ interface IItem {
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
-export const revalidate = 10
+// export const revalidate = 10
 
 const getRaffles = async () => {
   await Promise.all([new Promise(resolve => setTimeout(resolve, 4000))]);
-  const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle');
+  const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle', { cache: 'no-store' });
   const raffles: IItem[] = await res.json();
   return raffles;
 };
