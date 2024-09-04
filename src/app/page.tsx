@@ -23,6 +23,9 @@ interface IItem {
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
+export const revalidate = 10
+
+
 
 const getRaffles = async () => {
   await Promise.all([new Promise(resolve => setTimeout(resolve, 4000))]);
