@@ -13,7 +13,7 @@ const config: Config = {
         sei: '#9E1E1A'
       },
       backgroundImage: {
-        "sky": "url('/sky.webp')",
+        "sky": "url('/sky.jpg')",
       },
     },
   },

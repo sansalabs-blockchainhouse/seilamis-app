@@ -6,6 +6,8 @@ import { SeiWalletProvider } from "@sei-js/react";
 import Navbar from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,8 +49,7 @@ export default function RootLayout({
                 },
               }}
             />
-            <Navbar />
-            {children}
+              {children}
           </QueryClientProvider>
         </SeiWalletProvider>
       </body>

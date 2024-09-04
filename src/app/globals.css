@@ -6,14 +6,8 @@
 
 body {
   color: #FFFFFF;
-  background-image: url('/sky.jpg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: #FFFFFF;
   margin: 0;
   padding: 0;
-
-
 }
 
 @layer utilities {

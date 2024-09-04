@@ -1,3 +1,5 @@
+"use client"
+
 import { WalletConnectButton, useWallet } from "@sei-js/react";
 import Link from "next/link";
 import React from "react";
@@ -6,7 +8,7 @@ export default function Navbar() {
   const { accounts } = useWallet();
 
   return (
-    <div className="navbar bg-transparent px-1 py-0">
+    <div className="navbar  px-1 py-0">
       <div className="navbar-start">
         <div className="dropdown">
           <ul

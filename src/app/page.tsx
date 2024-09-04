@@ -1,8 +1,10 @@
-"use client";
 import Card from "@/components/Card";
+import Navbar from "@/components/Navbar";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Amatic_SC } from "next/font/google";
+import Image from "next/image";
+import { Suspense } from "react";
 
 interface IItem {
   id: string;
@@ -20,17 +22,30 @@ interface IItem {
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
-export default function Home() {
-  const { data: raffles } = useQuery({
-    queryKey: ["raffles-list"],
-    queryFn: (): Promise<IItem[]> =>
-      api.get(`raffle`).then((response) => response.data),
-    refetchOnWindowFocus: false,
-    initialData: [],
-  });
+
+const getRaffles = async () => {
+  const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle');
+  const raffles: IItem[] = await res.json();
+  return raffles;
+};
+
+
+export default async function Home() {
+  // const { data: raffles } = useQuery({
+  //   queryKey: ["raffles-list"],
+  //   queryFn: (): Promise<IItem[]> =>
+  //     api.get(`raffle`).then((response) => response.data),
+  //   refetchOnWindowFocus: false,
+  //   initialData: [],
+  // });
+
+  const raffles = await getRaffles();
+
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main className="flex min-h-screen flex-col items-center bg-sky bg-no-repeat bg-contain bg-white">
+      <Navbar />
+
       <span
         className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}
       >
@@ -45,6 +60,7 @@ export default function Home() {
           )
           .slice(0, 3)
           .map((nft, index) => (
+
             <Card
               key={index}
               id={nft.id}
@@ -60,12 +76,13 @@ export default function Home() {
             />
           ))}
       </div>
+
       <span
         className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
       >
         most popular
       </span>
-      {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
+
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles
           .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
@@ -73,6 +90,8 @@ export default function Home() {
           .map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
+                key={index}
+
                 id={nft.id}
                 imgUrl={nft.image}
                 name={nft.name}
@@ -92,15 +111,16 @@ export default function Home() {
       >
         ended
       </span>
-      {/* <div className="carousel carousel-center w-full max-w-7xl p-4 space-x-6 rounded-box"> */}
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
         {raffles
           .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
           ?.filter((item) => item.winner)
-          .slice(0, 12) 
+          .slice(0, 12)
           ?.map((nft, index) => (
             <div key={index} className="carousel-item">
               <Card
+                key={index}
+
                 id={nft.id}
                 imgUrl={nft.image}
                 name={nft.name}
@@ -116,6 +136,7 @@ export default function Home() {
             </div>
           ))}
       </div>
+
     </main>
   );
 }

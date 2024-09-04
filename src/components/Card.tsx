@@ -184,7 +184,7 @@ export default function Card({
         {!winner && (
           <div className="flex justify-between text-black">
             <span>Ends in</span>
-            <span>{timeDifference}</span>
+            <span suppressHydrationWarning={true}>{timeDifference}</span>
           </div>
         )}
         {winner && (
