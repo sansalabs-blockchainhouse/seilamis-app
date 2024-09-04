@@ -12,6 +12,7 @@ import { useWallet, useSigningClient } from "@sei-js/react";
 import toast from "react-hot-toast";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import CopyToClipboard from "react-copy-to-clipboard";
+import Navbar from "@/components/Navbar";
 
 interface IItem {
   id: string;
@@ -178,6 +179,8 @@ export default function Raffle({ params }: { params: { id: string } }) {
     <>
       {!isLoading && raffle && (
         <div className="font-poppins h-full flex flex-col items-center justify-between p-5 bg-sky bg-no-repeat bg-contain bg-white">
+                <Navbar />
+
           <div className="flex flex-col items-start gap-4 justify-between">
             <Link href={"/"} className="flex items-center gap-2">
               <span className="text-black font-bold text-base">

@@ -16,6 +16,7 @@ import { toUtf8 } from "@cosmjs/encoding";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
+import Navbar from "@/components/Navbar";
 
 interface IWallets {
   id: string;
@@ -133,6 +134,8 @@ export default function Create() {
   return (
     <>
       <div className="flex flex-col h-full md:h-screen items-center p-5 z-50 bg-sky bg-no-repeat bg-contain bg-white">
+        <Navbar />
+
         <div className="flex flex-col items-start gap-4 justify-between">
           <Link href={"/"} className="flex items-center gap-2">
             <span className="text-black font-bold text-base">
@@ -219,11 +222,10 @@ export default function Create() {
                     setDays(1);
                     addDays(1);
                   }}
-                  className={`border border-primary ${
-                    days === 1
+                  className={`border border-primary ${days === 1
                       ? "bg-primary text-white"
                       : "bg-transparent text-black"
-                  } py-2 px-4 rounded-lg`}
+                    } py-2 px-4 rounded-lg`}
                 >
                   1 day
                 </button>
@@ -232,11 +234,10 @@ export default function Create() {
                     setDays(3);
                     addDays(3);
                   }}
-                  className={`border border-primary ${
-                    days === 3
+                  className={`border border-primary ${days === 3
                       ? "bg-primary text-white"
                       : "bg-transparent text-black"
-                  } py-2 px-3 rounded-lg`}
+                    } py-2 px-3 rounded-lg`}
                 >
                   3 days
                 </button>
@@ -245,11 +246,10 @@ export default function Create() {
                     setDays(5);
                     addDays(5);
                   }}
-                  className={`border border-primary ${
-                    days === 5
+                  className={`border border-primary ${days === 5
                       ? "bg-primary text-white"
                       : "bg-transparent text-black"
-                  } py-2 px-3 rounded-lg`}
+                    } py-2 px-3 rounded-lg`}
                 >
                   5 days
                 </button>
@@ -258,11 +258,10 @@ export default function Create() {
                     setDays(7);
                     addDays(7);
                   }}
-                  className={`border border-primary py-2 px-3 rounded-lg ${
-                    days === 7
+                  className={`border border-primary py-2 px-3 rounded-lg ${days === 7
                       ? "bg-primary text-white"
                       : "bg-transparent text-black"
-                  } `}
+                    } `}
                 >
                   7 days
                 </button>
