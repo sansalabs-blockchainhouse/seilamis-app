@@ -133,10 +133,10 @@ export default function Create() {
 
   return (
     <>
-      <div className="flex flex-col h-full md:h-screen items-center p-5 z-50 bg-sky bg-no-repeat bg-contain bg-white">
+      <div className="flex flex-col h-full md:h-screen items-center z-50 bg-sky bg-no-repeat bg-contain bg-white">
         <Navbar />
 
-        <div className="flex flex-col items-start gap-4 justify-between">
+        <div className="flex flex-col items-start gap-4 justify-between p-5">
           <Link href={"/"} className="flex items-center gap-2">
             <span className="text-black font-bold text-base">
               <IoArrowBackOutline />

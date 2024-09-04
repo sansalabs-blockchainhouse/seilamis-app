@@ -178,10 +178,10 @@ export default function Raffle({ params }: { params: { id: string } }) {
   return (
     <>
       {!isLoading && raffle && (
-        <div className="font-poppins h-full flex flex-col items-center justify-between p-5 bg-sky bg-no-repeat bg-contain bg-white">
+        <div className="font-poppins h-full flex flex-col items-center justify-between  bg-sky bg-no-repeat bg-contain bg-white">
           <Navbar />
 
-          <div className="flex flex-col items-start gap-4 justify-between">
+          <div className="flex flex-col items-start gap-4 justify-between p-5">
             <Link href={"/"} className="flex items-center gap-2">
               <span className="text-black font-bold text-base">
                 <IoArrowBackOutline />
