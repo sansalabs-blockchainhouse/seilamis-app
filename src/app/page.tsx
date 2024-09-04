@@ -1,11 +1,11 @@
 import Card from "@/components/Card";
-import Loading from "@/components/Loading";
 import Navbar from "@/components/Navbar";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Amatic_SC } from "next/font/google";
 import Image from "next/image";
 import { Suspense } from "react";
+import Loading from "./loading";
 
 interface IItem {
   id: string;
