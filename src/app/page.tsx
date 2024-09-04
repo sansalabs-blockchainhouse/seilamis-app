@@ -1,9 +1,6 @@
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
-import { api } from "@/services/api";
-import { useQuery } from "@tanstack/react-query";
 import { Amatic_SC } from "next/font/google";
-import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "./loading";
 
@@ -23,8 +20,6 @@ interface IItem {
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
-// export const revalidate = 10
-
 const getRaffles = async () => {
   const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle', { cache: 'no-store' });
   await Promise.all([new Promise(resolve => setTimeout(resolve, 3000))]);
@@ -34,16 +29,7 @@ const getRaffles = async () => {
 
 
 export default async function Home() {
-  // const { data: raffles } = useQuery({
-  //   queryKey: ["raffles-list"],
-  //   queryFn: (): Promise<IItem[]> =>
-  //     api.get(`raffle`).then((response) => response.data),
-  //   refetchOnWindowFocus: false,
-  //   initialData: [],
-  // });
-
   const raffles = await getRaffles();
-
 
   return (
     <Suspense fallback={<Loading />}>
