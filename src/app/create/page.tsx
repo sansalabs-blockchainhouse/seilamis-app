@@ -133,7 +133,7 @@ export default function Create() {
 
   return (
     <>
-      <div className="flex flex-col h-full md:h-screen items-center z-50 bg-sky bg-no-repeat bg-contain bg-white">
+      <div className="flex flex-col min-h-screen items-center z-50 bg-sky bg-no-repeat bg-cover bg-red-600">
         <Navbar />
 
         <div className="flex flex-col items-start gap-4 justify-between p-5">
@@ -223,8 +223,8 @@ export default function Create() {
                     addDays(1);
                   }}
                   className={`border border-primary ${days === 1
-                      ? "bg-primary text-white"
-                      : "bg-transparent text-black"
+                    ? "bg-primary text-white"
+                    : "bg-transparent text-black"
                     } py-2 px-4 rounded-lg`}
                 >
                   1 day
@@ -235,8 +235,8 @@ export default function Create() {
                     addDays(3);
                   }}
                   className={`border border-primary ${days === 3
-                      ? "bg-primary text-white"
-                      : "bg-transparent text-black"
+                    ? "bg-primary text-white"
+                    : "bg-transparent text-black"
                     } py-2 px-3 rounded-lg`}
                 >
                   3 days
@@ -247,8 +247,8 @@ export default function Create() {
                     addDays(5);
                   }}
                   className={`border border-primary ${days === 5
-                      ? "bg-primary text-white"
-                      : "bg-transparent text-black"
+                    ? "bg-primary text-white"
+                    : "bg-transparent text-black"
                     } py-2 px-3 rounded-lg`}
                 >
                   5 days
@@ -259,8 +259,8 @@ export default function Create() {
                     addDays(7);
                   }}
                   className={`border border-primary py-2 px-3 rounded-lg ${days === 7
-                      ? "bg-primary text-white"
-                      : "bg-transparent text-black"
+                    ? "bg-primary text-white"
+                    : "bg-transparent text-black"
                     } `}
                 >
                   7 days
