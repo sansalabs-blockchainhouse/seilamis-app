@@ -25,8 +25,6 @@ const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
 export const revalidate = 10
 
-
-
 const getRaffles = async () => {
   await Promise.all([new Promise(resolve => setTimeout(resolve, 4000))]);
   const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle');
@@ -66,7 +64,6 @@ export default async function Home() {
             )
             .slice(0, 3)
             .map((nft, index) => (
-
               <Card
                 key={index}
                 id={nft.id}
@@ -97,7 +94,6 @@ export default async function Home() {
               <div key={index} className="carousel-item">
                 <Card
                   key={index}
-
                   id={nft.id}
                   imgUrl={nft.image}
                   name={nft.name}
@@ -119,14 +115,17 @@ export default async function Home() {
         </span>
         <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
           {raffles
-            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
+            .sort((a, b) => {
+              const dateA = new Date(a.endTime).getTime();
+              const dateB = new Date(b.endTime).getTime();
+              return dateB - dateA;
+            })
             ?.filter((item) => item.winner)
             .slice(0, 12)
             ?.map((nft, index) => (
               <div key={index} className="carousel-item">
                 <Card
                   key={index}
-
                   id={nft.id}
                   imgUrl={nft.image}
                   name={nft.name}
