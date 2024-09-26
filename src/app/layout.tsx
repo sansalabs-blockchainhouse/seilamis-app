@@ -1,11 +1,10 @@
 "use client";
-import type { Metadata } from "next";
-import { Amatic_SC, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { SeiWalletProvider } from "@sei-js/react";
-import Navbar from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
+import NetworkProvider from "@/contexts/Network";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,26 +27,28 @@ export default function RootLayout({
           wallets={["compass", "fin", "keplr", "leap"]}
         >
           <QueryClientProvider client={queryClient}>
-            <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
-              <img
-                src="/floating.png"
-                className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+            <NetworkProvider>
+              <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
+                <img
+                  src="/floating.png"
+                  className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+                />
+              </div>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    border: "1px solid #FFFFFF",
+                    color: "#FFFFFF",
+                    fontWeight: "bold",
+                    backgroundColor: "#AA6938",
+                    padding: "12px",
+                    fontSize: "18px",
+                  },
+                }}
               />
-            </div>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  border: "1px solid #FFFFFF",
-                  color: "#FFFFFF",
-                  fontWeight: "bold",
-                  backgroundColor: "#AA6938",
-                  padding: "12px",
-                  fontSize: "18px",
-                },
-              }}
-            />
               {children}
+            </NetworkProvider>
           </QueryClientProvider>
         </SeiWalletProvider>
       </body>

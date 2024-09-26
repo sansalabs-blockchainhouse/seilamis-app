@@ -17,6 +17,8 @@ import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { api } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
+import { useNetworkContext } from "@/contexts/Network";
+import { toastError, toastLoading, toastSuccess } from "@/utils/customToast";
 
 interface IWallets {
   id: string;
@@ -27,6 +29,7 @@ export default function Create() {
   const { offlineSigner, accounts } = useWallet();
   const { signingCosmWasmClient } = useSigningCosmWasmClient();
   const { cosmWasmClient } = useCosmWasmClient();
+  const { isSei, setIsSei } = useNetworkContext();
 
   const [currentNft, setCurrentNft] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
@@ -49,12 +52,16 @@ export default function Create() {
 
   const handleCreateRaffle = useCallback(async () => {
     try {
-      if (!cosmWasmClient || !currentNft) return;
+      if (!cosmWasmClient) return;
+
+      if (!currentNft) {
+        return toastError("Select a valid nft!", isSei);
+      }
 
       if (!offlineSigner || !signingCosmWasmClient) return;
 
       if (days === 0) {
-        return toast.error("Select a valid raffle duration!");
+        return toastError("Select a valid raffle duration!", isSei);
       }
 
       const fee = calculateFee(228605, "0.1usei");
@@ -74,7 +81,7 @@ export default function Create() {
           ),
         },
       };
-      toast.loading("Sending...");
+      toastLoading("Sending...", isSei);
 
       const response = await signingCosmWasmClient.sign(
         accounts[0].address,
@@ -105,12 +112,12 @@ export default function Create() {
 
       toast.dismiss();
 
-      toast.success("Success!");
+      toastSuccess("Success!", isSei);
     } catch (error: any) {
       if (error.name === "AxiosError") {
-        toast.error(error.response.data.message);
+        toastError(error.response.data.message, isSei);
       } else {
-        toast.error("Something went wrong");
+        toastError("Something went wrong", isSei);
       }
     }
   }, [
@@ -123,6 +130,7 @@ export default function Create() {
     days,
     price,
     isVerified,
+    isSei,
   ]);
 
   const addDays = (days: number) => {
@@ -133,15 +141,29 @@ export default function Create() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen items-center z-50 bg-sky bg-no-repeat bg-cover bg-red-600">
+      <div
+        className={`flex min-h-screen flex-col items-center bg-cover bg-no-repeat ${
+          isSei ? "bg-bg@1" : "bg-bg@2"
+        }`}
+      >
+        {" "}
         <Navbar />
-
         <div className="flex flex-col items-start gap-4 justify-between p-5">
           <Link href={"/"} className="flex items-center gap-2">
-            <span className="text-black font-bold text-base">
+            <span
+              className={`${
+                isSei ? "text-black" : "text-white"
+              } font-bold text-base`}
+            >
               <IoArrowBackOutline />
             </span>
-            <span className="text-black font-bold text-base">Go back</span>
+            <span
+              className={`${
+                isSei ? "text-black" : "text-white"
+              } font-bold text-base`}
+            >
+              Go back
+            </span>
           </Link>
           <div className="flex flex-col md:flex-row items-start gap-12 justify-between">
             {!currentNft && (
@@ -152,7 +174,9 @@ export default function Create() {
                   }
                   setIsOpen(true);
                 }}
-                className="bg-primary w-full md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
+                className={`${
+                  isSei ? "bg-primary" : "bg-black"
+                } w-full md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4`}
               >
                 <span className="text-7xl text-white">
                   <IoIosAddCircleOutline />
@@ -174,7 +198,11 @@ export default function Create() {
               ></div>
             )}
 
-            <div className="flex flex-col p-5 w-full md:w-96 h-72 bg-primary rounded-xl space-y-5 overflow-y-scroll">
+            <div
+              className={`${
+                isSei ? "bg-primary" : "bg-secondary"
+              } flex flex-col p-5 w-full md:w-96 h-72 rounded-xl space-y-5 overflow-y-scroll`}
+            >
               <span className="text-white font-bold text-sm">
                 Terms and conditions
               </span>
@@ -199,7 +227,9 @@ export default function Create() {
         <div className="flex justify-between flex-col mt-5 gap-2 bg-card_bg p-5 rounded-lg w-full  md:w-1/2">
           <div className="flex gap-5 justify-between flex-col md:flex-row">
             <div className="flex flex-col w-full gap-2">
-              <label className="text-black text-lg">
+              <label
+                className={`${isSei ? "text-black" : "text-white"} text-lg`}
+              >
                 Ticket Price (SEI) <span className="text-red-700">*</span>
               </label>
 
@@ -209,11 +239,15 @@ export default function Create() {
                 value={price}
                 pattern="^[0-9]+([,.][0-9]+)?$"
                 onChange={(e) => setPrice(e.target.value)}
-                className=" box-border bg-primary border border-white border-opacity-20 rounded-lg py-2 focus:outline-none text-white text-opacity-90 px-4"
+                className={`${
+                  isSei ? "bg-primary" : "bg-secondary"
+                } box-border border border-white border-opacity-20 rounded-lg py-2 focus:outline-none text-white text-opacity-90 px-4`}
               />
             </div>
             <div className="flex flex-col w-full gap-2">
-              <label className="text-black text-lg">
+              <label
+                className={`${isSei ? "text-black" : "text-white"} text-lg`}
+              >
                 Raffle Duration <span className="text-red-700">*</span>
               </label>
               <div className="flex w-full gap-5">
@@ -222,10 +256,17 @@ export default function Create() {
                     setDays(1);
                     addDays(1);
                   }}
-                  className={`border border-primary ${days === 1
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-4 rounded-lg`}
+                  className={`${
+                    isSei
+                      ? "text-black border border-primary"
+                      : "text-white border border-white"
+                  } ${
+                    isSei && days === 1
+                      ? "bg-primary text-white"
+                      : !isSei && days === 1
+                      ? "bg-secondary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   1 day
                 </button>
@@ -234,10 +275,17 @@ export default function Create() {
                     setDays(3);
                     addDays(3);
                   }}
-                  className={`border border-primary ${days === 3
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-3 rounded-lg`}
+                  className={`${
+                    isSei
+                      ? "text-black border border-primary"
+                      : "text-white border border-white"
+                  } ${
+                    isSei && days === 3
+                      ? "bg-primary text-white"
+                      : !isSei && days === 3
+                      ? "bg-secondary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   3 days
                 </button>
@@ -246,10 +294,17 @@ export default function Create() {
                     setDays(5);
                     addDays(5);
                   }}
-                  className={`border border-primary ${days === 5
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-3 rounded-lg`}
+                  className={`${
+                    isSei
+                      ? "text-black border border-primary"
+                      : "text-white border border-white"
+                  } ${
+                    isSei && days === 5
+                      ? "bg-primary text-white"
+                      : !isSei && days === 5
+                      ? "bg-secondary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   5 days
                 </button>
@@ -258,10 +313,17 @@ export default function Create() {
                     setDays(7);
                     addDays(7);
                   }}
-                  className={`border border-primary py-2 px-3 rounded-lg ${days === 7
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } `}
+                  className={`${
+                    isSei
+                      ? "text-black border border-primary"
+                      : "text-white border border-white"
+                  } ${
+                    isSei && days === 7
+                      ? "bg-primary text-white"
+                      : !isSei && days === 7
+                      ? "bg-secondary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   7 days
                 </button>
@@ -278,7 +340,11 @@ export default function Create() {
                   onChange={() => setTerms((prev) => !prev)}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
-                <label className="ms-2 text-sm font-medium text-black">
+                <label
+                  className={`${
+                    isSei ? "text-black" : "text-white"
+                  } ms-2 text-sm font-medium`}
+                >
                   I accept with the terms and conditions above.
                 </label>
               </div>
@@ -300,7 +366,11 @@ export default function Create() {
                 )}
             </div>
             <div>
-              <span className="text-black">
+              <span
+                className={`${
+                  isSei ? "text-black" : "text-white"
+                } text-sm font-medium`}
+              >
                 {formatReadableDate(endDate.toISOString())}
               </span>
             </div>
@@ -308,7 +378,9 @@ export default function Create() {
 
           <button
             onClick={() => handleCreateRaffle()}
-            className="mt-4 px-6 py-3 bg-primary rounded-lg text-white hover:opacity-70"
+            className={`${
+              isSei ? "bg-primary" : "bg-secondary"
+            } mt-4 px-6 py-3 rounded-lg text-white hover:opacity-70`}
           >
             Create
           </button>

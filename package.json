@@ -10,9 +10,10 @@
   },
   "dependencies": {
     "@cosmjs/stargate": "^0.32.2",
+    "@rainbow-me/rainbowkit": "^2.1.6",
     "@sei-js/core": "^3.2.1",
     "@sei-js/react": "^3.2.0",
-    "@tanstack/react-query": "^5.25.0",
+    "@tanstack/react-query": "^5.56.2",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
     "next": "14.1.0",
@@ -21,7 +22,9 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.0.1",
-    "tailwindcss-animated": "^1.0.1"
+    "tailwindcss-animated": "^1.0.1",
+    "viem": "^2.21.14",
+    "wagmi": "^2.12.13"
   },
   "devDependencies": {
     "@types/node": "^20",

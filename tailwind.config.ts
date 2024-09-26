@@ -10,11 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         primary: "#AA6938",
+        secondary: "#722AA3",
         sei: '#9E1E1A'
       },
       backgroundImage: {
-        "sky": "url('/sky.jpg')",
+        "bg@1": "url('/bg@1.jpg')",
+        "bg@2": "url('/bg@2.png')",
       },
+    },
+    fontFamily: {
+      london: ["London", "sans-serif"],
     },
   },
   plugins: [require("daisyui"), require("tailwindcss-animated")],

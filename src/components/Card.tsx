@@ -13,6 +13,7 @@ import { MdVerified } from "react-icons/md";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { formatWallet } from "@/utils/formatWallet";
 import CopyToClipboard from "react-copy-to-clipboard";
+import { useNetworkContext } from "@/contexts/Network";
 
 interface ICard {
   id: string;
@@ -44,6 +45,7 @@ export default function Card({
   const { accounts } = useWallet();
 
   const { signingClient } = useSigningClient();
+  const { isSei } = useNetworkContext();
 
   const [timeDifference, setTimeDifference] = useState(
     formatDateDifference(startTime, endTime)
@@ -63,7 +65,7 @@ export default function Card({
 
   const handleBuy = useCallback(async () => {
     try {
-      if (winner) return
+      if (winner) return;
 
       if (!accounts.length) {
         return toast.error("Connect your wallet");
@@ -149,8 +151,9 @@ export default function Card({
 
   return (
     <div
-      className={`rounded-xl ${isVerified ? "border-2 border-sei relative" : "border border-primary"
-        }`}
+      className={`rounded-xl ${
+        isVerified ? "border-2 border-sei relative" : "border border-primary"
+      } ${isSei ? "" : "bg-black border-none"}`}
     >
       <div
         className="flex flex-col w-7 bg-transparent pb-3 border-transparent rounded-t-xl relative"
@@ -166,23 +169,45 @@ export default function Card({
         )}
       </div>
       <div className="flex flex-col px-3 py-3">
-        <div className="bg-primary flex w-fit p-1 items-center gap-2 rounded-lg text-sm">
+        <div
+          className={`${
+            isSei ? "bg-primary" : "bg-secondary"
+          } flex w-fit p-1 items-center gap-2 rounded-lg text-sm`}
+        >
           <span>{collectionName}</span>
           <span className="text-green-300">
             <MdVerified />
           </span>
         </div>
-        <span className="text-black font-bold text-xl mt-2">{name}</span>
-        <div className="flex justify-between text-black">
+        <span
+          className={`${
+            isSei ? "text-black" : "text-white"
+          } font-bold text-xl mt-2`}
+        >
+          {name}
+        </span>
+        <div
+          className={`flex justify-between ${
+            isSei ? "text-black" : "text-white"
+          }`}
+        >
           <span>Ticket price</span>
           <span className="font-bold">{price} SEI</span>
         </div>
-        <div className="flex justify-between text-black">
+        <div
+          className={`flex justify-between ${
+            isSei ? "text-black" : "text-white"
+          }`}
+        >
           <span>Tickets</span>
           <span className="font-bold">{ticketsSold}</span>
         </div>
         {!winner && (
-          <div className="flex justify-between text-black">
+          <div
+            className={`flex justify-between ${
+              isSei ? "text-black" : "text-white"
+            }`}
+          >
             <span>Ends in</span>
             <span suppressHydrationWarning={true}>{timeDifference}</span>
           </div>
@@ -205,20 +230,30 @@ export default function Card({
             <button
               disabled={winner ? true : false}
               onClick={handleBuy}
-              className="bg-primary rounded-lg p-3 w-44 hover:"
+              className={`${
+                isSei ? "bg-primary" : "bg-secondary"
+              } bg-primary rounded-lg p-3 w-44`}
             >
               Buy
             </button>
             <Link
               href={`/raffles/${id}`}
-              className="flex items-center justify-center bg-primary rounded-lg p-3 w-20"
+              className={`${
+                isSei ? "bg-primary" : "bg-secondary"
+              } flex items-center justify-center rounded-lg p-3 w-20`}
             >
               View
             </Link>
           </>
         )}
         {winner && (
-          <button className="bg-primary rounded-lg p-3 w-full">Ended</button>
+          <button
+            className={`${
+              isSei ? "bg-primary" : "bg-secondary"
+            } rounded-lg p-3 w-full`}
+          >
+            Ended
+          </button>
         )}
       </div>
     </div>
