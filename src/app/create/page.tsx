@@ -23,6 +23,12 @@ interface IWallets {
   address: string;
 }
 
+interface IToken {
+  id: string;
+  name: string;
+  address: string;
+}
+
 export default function Create() {
   const { offlineSigner, accounts } = useWallet();
   const { signingCosmWasmClient } = useSigningCosmWasmClient();
@@ -39,10 +45,20 @@ export default function Create() {
   const [terms, setTerms] = useState<boolean>(false);
   const [isVerified, setIsVerified] = useState<boolean>(false);
 
+  const [token, setToken] = useState("");
+
   const { data: wallets } = useQuery({
     queryKey: ["wallets-list"],
     queryFn: (): Promise<IWallets[]> =>
       api.get(`verified`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
+
+  const { data: tokens } = useQuery({
+    queryKey: ["tokens-list"],
+    queryFn: (): Promise<IToken[]> =>
+      api.get(`token`).then((response) => response.data),
     refetchOnWindowFocus: false,
     initialData: [],
   });
@@ -198,9 +214,25 @@ export default function Create() {
         </div>
         <div className="flex justify-between flex-col mt-5 gap-2 bg-card_bg p-5 rounded-lg w-full  md:w-1/2">
           <div className="flex gap-5 justify-between flex-col md:flex-row">
+            <div className="flex flex-col w-40 gap-2">
+              <label className="text-black text-lg">
+                Token <span className="text-red-700">*</span>
+              </label>
+
+              <select
+                onChange={(e) => setToken(e.target.value)}
+                className="box-border h-[42px] bg-primary border border-white border-opacity-20 rounded-lg py-2 focus:outline-none text-white text-opacity-90 px-2"
+              >
+                {tokens.map((token, key) => (
+                  <option key={key} value={token.name}>
+                    {token.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex flex-col w-full gap-2">
               <label className="text-black text-lg">
-                Ticket Price (SEI) <span className="text-red-700">*</span>
+                Ticket Price <span className="text-red-700">*</span>
               </label>
 
               <input
@@ -222,10 +254,11 @@ export default function Create() {
                     setDays(1);
                     addDays(1);
                   }}
-                  className={`border border-primary ${days === 1
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-4 rounded-lg`}
+                  className={`border border-primary ${
+                    days === 1
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-4 rounded-lg`}
                 >
                   1 day
                 </button>
@@ -234,10 +267,11 @@ export default function Create() {
                     setDays(3);
                     addDays(3);
                   }}
-                  className={`border border-primary ${days === 3
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-3 rounded-lg`}
+                  className={`border border-primary ${
+                    days === 3
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-3 rounded-lg`}
                 >
                   3 days
                 </button>
@@ -246,10 +280,11 @@ export default function Create() {
                     setDays(5);
                     addDays(5);
                   }}
-                  className={`border border-primary ${days === 5
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } py-2 px-3 rounded-lg`}
+                  className={`border border-primary ${
+                    days === 5
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } py-2 px-3 rounded-lg`}
                 >
                   5 days
                 </button>
@@ -258,10 +293,11 @@ export default function Create() {
                     setDays(7);
                     addDays(7);
                   }}
-                  className={`border border-primary py-2 px-3 rounded-lg ${days === 7
-                    ? "bg-primary text-white"
-                    : "bg-transparent text-black"
-                    } `}
+                  className={`border border-primary py-2 px-3 rounded-lg ${
+                    days === 7
+                      ? "bg-primary text-white"
+                      : "bg-transparent text-black"
+                  } `}
                 >
                   7 days
                 </button>
