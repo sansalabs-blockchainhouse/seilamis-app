@@ -4,9 +4,12 @@ import { useNetworkContext } from "@/contexts/Network";
 import { WalletConnectButton, useWallet } from "@sei-js/react";
 import Link from "next/link";
 import React from "react";
+import { ConnectButton } from "./Polygon/Connect";
+import { useAccount } from "wagmi";
 
 export default function Navbar() {
   const { accounts } = useWallet();
+  const { address } = useAccount();
 
   const { isSei, setIsSei } = useNetworkContext();
 
@@ -41,12 +44,19 @@ export default function Navbar() {
             {isSei ? darkIcon : lightIcon}
           </div>
         </button>
-        {accounts.length > 0 && (
+        {isSei && accounts.length > 0 && (
           <Link
             href={"/create"}
-            className={`${
-              isSei ? "bg-primary" : "bg-secondary"
-            } flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
+            className={`bg-primary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
+          >
+            Create
+          </Link>
+        )}
+
+        {!isSei && address && address.length > 0 && (
+          <Link
+            href={"/"}
+            className={`bg-secondary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
           >
             Create
           </Link>
@@ -55,9 +65,7 @@ export default function Navbar() {
           <WalletConnectButton buttonClassName="bg-primary rounded-lg p-4 font-bold text-white uppercase h-14 w-40" />
         )}
 
-        {!isSei && (
-          <WalletConnectButton buttonClassName="bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40" />
-        )}
+        {!isSei && <ConnectButton />}
       </div>
     </div>
   );
