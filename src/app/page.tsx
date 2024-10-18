@@ -6,6 +6,7 @@ import { Amatic_SC } from "next/font/google";
 import { useNetworkContext } from "@/contexts/Network";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
+import CardPolygon from "@/components/Polygon/Card";
 
 interface IItem {
   id: string;
@@ -32,9 +33,17 @@ export default function Home() {
     initialData: [],
   });
 
+  const { data: raffles_polygon } = useQuery({
+    queryKey: ["raffles-list-polygon"],
+    queryFn: (): Promise<any[]> =>
+      api.get(`raffle/all/polygon`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
+
   const { isSei } = useNetworkContext();
 
-  if (isFetching  && isSei) {
+  if (isFetching && isSei) {
     return (
       <div className="min-h-screen rounded-xl bg-[#89E1FF] flex items-center justify-center">
         <img src="/cloud.png" className="w-40 animate-pulse " alt="sky" />
@@ -58,28 +67,60 @@ export default function Home() {
         ending soon
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-        {raffles
-          ?.filter((item) => !item.winner)
-          .sort(
-            (a: any, b: any) =>
-              (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
-          )
-          .slice(0, 3)
-          .map((nft, index) => (
-            <Card
-              key={index}
-              id={nft.id}
-              imgUrl={nft.image}
-              name={nft.name}
-              startTime={nft.startTime}
-              endTime={nft.endTime}
-              collectionName={nft.collectionName}
-              price={nft.price}
-              ticketsSold={nft.ticketsSold}
-              creator={nft.creator}
-              isVerified={nft.isVerified}
-            />
-          ))}
+        {isSei &&
+          raffles
+            ?.filter((item) => !item.winner)
+            .sort(
+              (a: any, b: any) =>
+                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
+            )
+            .slice(0, 3)
+            .map((nft, index) => (
+              <Card
+                key={index}
+                id={nft.id}
+                imgUrl={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.collectionName}
+                price={nft.price}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+                isVerified={nft.isVerified}
+              />
+            ))}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
+        {!isSei &&
+          raffles_polygon
+            ?.filter(
+              (item) =>
+                item.winner === "0x0000000000000000000000000000000000000000"
+            )
+            .sort(
+              (a: any, b: any) =>
+                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
+            )
+            .slice(0, 3)
+            .map((nft, index) => (
+              <CardPolygon
+                key={index}
+                id={nft.nftId}
+                image={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.name.replace(/[0-9#]/g, "")}
+                price={nft.price}
+                nftId={nft.nftId}
+                raffleType={nft.raffleType}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+                winner={nft.winner}
+              />
+            ))}
       </div>
 
       <span
@@ -91,27 +132,58 @@ export default function Home() {
       </span>
 
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {raffles
-          .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
-          ?.filter((item) => !item.winner)
-          .map((nft, index) => (
-            <div key={index} className="carousel-item">
-              <Card
-                key={index}
-                id={nft.id}
-                imgUrl={nft.image}
-                name={nft.name}
-                startTime={nft.startTime}
-                endTime={nft.endTime}
-                collectionName={nft.collectionName}
-                price={nft.price}
-                ticketsSold={nft.ticketsSold}
-                creator={nft.creator}
-                isVerified={nft.isVerified}
-              />
-            </div>
-          ))}
+        {isSei &&
+          raffles
+            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
+            ?.filter((item) => !item.winner)
+            .map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <Card
+                  key={index}
+                  id={nft.id}
+                  imgUrl={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.collectionName}
+                  price={nft.price}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  isVerified={nft.isVerified}
+                />
+              </div>
+            ))}
       </div>
+
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {!isSei &&
+          raffles_polygon
+            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
+            ?.filter(
+              (item) =>
+                item.winner === "0x0000000000000000000000000000000000000000"
+            )
+            .map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <CardPolygon
+                  key={index}
+                  id={nft.nftId}
+                  image={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.name.replace(/[0-9#]/g, "")}
+                  price={nft.price}
+                  nftId={nft.nftId}
+                  raffleType={nft.raffleType}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  winner={nft.winner}
+                />
+              </div>
+            ))}
+      </div>
+
       <span
         className={`${
           isSei ? amantic.className + " text-primary" : "font-london text-white"
@@ -120,32 +192,65 @@ export default function Home() {
         ended
       </span>
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {raffles
-          .sort((a, b) => {
-            const dateA = new Date(a.endTime).getTime();
-            const dateB = new Date(b.endTime).getTime();
-            return dateB - dateA;
-          })
-          ?.filter((item) => item.winner)
-          .slice(0, 12)
-          ?.map((nft, index) => (
-            <div key={index} className="carousel-item">
-              <Card
-                key={index}
-                id={nft.id}
-                imgUrl={nft.image}
-                name={nft.name}
-                startTime={nft.startTime}
-                endTime={nft.endTime}
-                collectionName={nft.collectionName}
-                price={nft.price}
-                ticketsSold={nft.ticketsSold}
-                creator={nft.creator}
-                winner={nft.winner}
-                isVerified={nft.isVerified}
-              />
-            </div>
-          ))}
+        {isSei &&
+          raffles
+            .sort((a, b) => {
+              const dateA = new Date(a.endTime).getTime();
+              const dateB = new Date(b.endTime).getTime();
+              return dateB - dateA;
+            })
+            ?.filter((item) => item.winner)
+            .slice(0, 12)
+            ?.map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <Card
+                  key={index}
+                  id={nft.id}
+                  imgUrl={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.collectionName}
+                  price={nft.price}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  winner={nft.winner}
+                  isVerified={nft.isVerified}
+                />
+              </div>
+            ))}
+      </div>
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {!isSei &&
+          raffles_polygon
+            .sort((a, b) => {
+              const dateA = new Date(a.endTime).getTime();
+              const dateB = new Date(b.endTime).getTime();
+              return dateB - dateA;
+            })
+            ?.filter(
+              (item) =>
+                item.winner !== "0x0000000000000000000000000000000000000000"
+            )
+            ?.map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <CardPolygon
+                  key={index}
+                  id={nft.nftId}
+                  image={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.name.replace(/[0-9#]/g, "")}
+                  price={nft.price}
+                  nftId={nft.nftId}
+                  raffleType={nft.raffleType}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  winner={nft.winner}
+                />
+              </div>
+            ))}
       </div>
     </main>
   );

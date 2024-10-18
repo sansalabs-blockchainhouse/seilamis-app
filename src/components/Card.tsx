@@ -192,7 +192,9 @@ export default function Card({
           }`}
         >
           <span>Ticket price</span>
-          <span className="font-bold">{price} SEI</span>
+          <span className="font-bold">
+            {price} {isSei ? "SEI" : "POL"}
+          </span>
         </div>
         <div
           className={`flex justify-between ${
