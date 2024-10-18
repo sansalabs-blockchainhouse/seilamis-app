@@ -6,6 +6,8 @@ import Link from "next/link";
 import React from "react";
 import { ConnectButton } from "./Polygon/Connect";
 import { useAccount } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/services/api";
 
 export default function Navbar() {
   const { accounts } = useWallet();
@@ -17,6 +19,15 @@ export default function Navbar() {
     <img src={"/poly.png"} className="h-10" alt="polygon logo" />
   );
   const darkIcon = <img src={"/sei.png"} className="h-10" alt="sei logo" />;
+
+  const { data: freeTickets } = useQuery({
+    queryKey: ["free-tickets"],
+    queryFn: (): Promise<number> =>
+      api.get(`raffle/free-tickets/polygon/${address}`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    enabled: !isSei && address && address.length > 0,
+    initialData: 0,
+  });
 
   return (
     <div className="navbar  px-1 py-0">
@@ -52,6 +63,15 @@ export default function Navbar() {
             Create
           </Link>
         )}
+
+        {!isSei && freeTickets > 0 && address && address.length > 0 && (
+          <div
+            className={`bg-secondary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
+          >
+            {freeTickets} FREE TICKETS
+          </div>
+        )}
+
 
         {!isSei && address && address.length > 0 && (
           <Link
