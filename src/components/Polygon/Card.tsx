@@ -41,7 +41,7 @@ export default function CardPolygon({
     }
   }, [startTime, endTime, winner]);
 
-  const handleBuy = useCallback(async () => {}, [accounts, signingClient]);
+  const handleBuy = useCallback(async () => {}, []);
 
   return (
     <div className={`rounded-xl bg-black border-none`}>
@@ -92,21 +92,12 @@ export default function CardPolygon({
       </div>
       <div className="flex justify-between px-3 py-3">
         {winner && winner === "0x0000000000000000000000000000000000000000" && (
-          <>
-            <button
-              disabled={winner ? true : false}
-              onClick={handleBuy}
-              className={`bg-secondary rounded-lg p-3 w-44`}
-            >
-              Buy
-            </button>
             <Link
-              href={`/raffles/${id}`}
-              className={`bg-secondary flex items-center justify-center rounded-lg p-3 w-20`}
+              href={`/polygon/${id}`}
+              className={`bg-secondary flex items-center justify-center rounded-lg p-3 w-full`}
             >
               View
             </Link>
-          </>
         )}
         {winner && winner !== "0x0000000000000000000000000000000000000000" && (
           <button className={`bg-secondary rounded-lg p-3 w-full`}>

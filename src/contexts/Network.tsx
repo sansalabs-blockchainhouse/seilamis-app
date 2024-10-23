@@ -1,5 +1,5 @@
-"use client"
-import { createContext, useContext, useState } from "react";
+"use client";
+import { createContext, useContext, useState, useEffect } from "react";
 
 export interface NetworkContextType {
   isSei: boolean;
@@ -14,7 +14,28 @@ export const NetworkContext = createContext<NetworkContextType>({
 const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isSei, setIsSei] = useState(true);
+  const [isSei, setIsSei] = useState<boolean>(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedValue = localStorage.getItem("isSei");
+      if (storedValue) {
+        setIsSei(JSON.parse(storedValue));
+      }
+      setIsMounted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("isSei", JSON.stringify(isSei));
+    }
+  }, [isSei, isMounted]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   const value = {
     isSei,

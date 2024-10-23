@@ -107,7 +107,7 @@ export default function Home() {
             .map((nft, index) => (
               <CardPolygon
                 key={index}
-                id={nft.nftId}
+                id={nft.id}
                 image={nft.image}
                 name={nft.name}
                 startTime={nft.startTime}
@@ -167,7 +167,7 @@ export default function Home() {
               <div key={index} className="carousel-item">
                 <CardPolygon
                   key={index}
-                  id={nft.nftId}
+                  id={nft.id}
                   image={nft.image}
                   name={nft.name}
                   startTime={nft.startTime}

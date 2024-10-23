@@ -8,10 +8,12 @@ import { ConnectButton } from "./Polygon/Connect";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { accounts } = useWallet();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const { isSei, setIsSei } = useNetworkContext();
 
@@ -23,9 +25,11 @@ export default function Navbar() {
   const { data: freeTickets } = useQuery({
     queryKey: ["free-tickets"],
     queryFn: (): Promise<number> =>
-      api.get(`raffle/free-tickets/polygon/${address}`).then((response) => response.data),
+      api
+        .get(`raffle/free-tickets/polygon/${address}`)
+        .then((response) => response.data),
     refetchOnWindowFocus: false,
-    enabled: !isSei && address && address.length > 0,
+    enabled: isConnected,
     initialData: 0,
   });
 
@@ -38,23 +42,26 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-end text-black gap-6">
-        <button
-          className={`flex h-10 w-20 items-center rounded-full shadow transition duration-300 focus:outline-none ${
-            isSei ? "bg-white" : "bg-[#130829] border borde-2"
-          }`}
-          onClick={() => setIsSei((prev) => !prev)}
-        >
-          <div
-            className={`h-12 w-12 transform rounded-full p-1 text-white transition duration-500 ${
-              isSei
-                ? "translate-x-full bg-white"
-                : "-translate-x-1 bg-[#0E061E]"
+        {pathname === "/" && (
+          <button
+            className={`flex h-10 w-20 items-center rounded-full shadow transition duration-300 focus:outline-none ${
+              isSei ? "bg-white" : "bg-[#130829] border borde-2"
             }`}
-            id="switch-toggle"
+            onClick={() => setIsSei((prev) => !prev)}
           >
-            {isSei ? darkIcon : lightIcon}
-          </div>
-        </button>
+            <div
+              className={`h-12 w-12 transform rounded-full p-1 text-white transition duration-500 ${
+                isSei
+                  ? "translate-x-full bg-white"
+                  : "-translate-x-1 bg-[#0E061E]"
+              }`}
+              id="switch-toggle"
+            >
+              {isSei ? darkIcon : lightIcon}
+            </div>
+          </button>
+        )}
+
         {isSei && accounts.length > 0 && (
           <Link
             href={"/create"}
@@ -71,7 +78,6 @@ export default function Navbar() {
             {freeTickets} FREE TICKETS
           </div>
         )}
-
 
         {!isSei && address && address.length > 0 && (
           <Link
