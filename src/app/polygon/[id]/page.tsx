@@ -15,6 +15,8 @@ import { useAccount, useWriteContract } from "wagmi";
 import Image from "next/image";
 import { polygon } from "viem/chains";
 import {
+  HITCOIN_POLYGON_ABI,
+  HITCOIN_POLYGON_CONTRACT_ADDRESS,
   RAFFLE_POLYGON_ABI,
   RAFFLE_POLYGON_CONTRACT_ADDRESS,
 } from "@/constants";
@@ -68,7 +70,11 @@ export default function Raffle({ params }: { params: { id: string } }) {
   const handleBuy = useCallback(async () => {
     if (!raffle) return;
     if (payment === "POL") {
-      toast.loading("Sending...");
+      toast.loading("Sending...", {
+        style: {
+          backgroundColor: "#722AA3",
+        },
+      });
       const data = await writeContractAsync({
         chainId: polygon.id,
         address: RAFFLE_POLYGON_CONTRACT_ADDRESS,
@@ -80,9 +86,43 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
       await waitForTransactionReceipt({ hash: data });
       toast.dismiss();
-      toast.success("Success!");
+      toast.success("Success!", {
+        style: {
+          backgroundColor: "#722AA3",
+        },
+      });
     } else if (payment === "HIT") {
-      toast.loading("Sending...");
+      const { data: tokenInfo } = await api.get(`token/allowance/${address}`);
+
+      if (tokenInfo.allowance < Number(amount) * raffle.price[1]) {
+        toast.loading("Sending...", {
+          style: {
+            backgroundColor: "#722AA3",
+          },
+        });
+        const data = await writeContractAsync({
+          chainId: polygon.id,
+          address: HITCOIN_POLYGON_CONTRACT_ADDRESS,
+          functionName: "increaseAllowance",
+          abi: HITCOIN_POLYGON_ABI,
+          args: [RAFFLE_POLYGON_CONTRACT_ADDRESS, tokenInfo.balanceOf],
+        });
+
+        await waitForTransactionReceipt({ hash: data });
+        toast.dismiss();
+        toast.success("Success!", {
+          style: {
+            backgroundColor: "#722AA3",
+          },
+        });
+      }
+
+      toast.loading("Sending..."),
+        {
+          style: {
+            backgroundColor: "#722AA3",
+          },
+        };
 
       const data = await writeContractAsync({
         chainId: polygon.id,
@@ -94,9 +134,17 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
       await waitForTransactionReceipt({ hash: data });
       toast.dismiss();
-      toast.success("Success!");
+      toast.success("Success!", {
+        style: {
+          backgroundColor: "#722AA3",
+        },
+      });
     } else if (payment === "TICKET") {
-      toast.loading("Sending...");
+      toast.loading("Sending...", {
+        style: {
+          backgroundColor: "#722AA3",
+        },
+      });
 
       const data = await writeContractAsync({
         chainId: polygon.id,
@@ -109,9 +157,18 @@ export default function Raffle({ params }: { params: { id: string } }) {
       await waitForTransactionReceipt({ hash: data });
 
       toast.dismiss();
-      toast.success("Success!");
+      toast.success("Success!", {
+        style: {
+          backgroundColor: "#722AA3",
+        },
+      });
+      await refetchTickets();
     }
-  }, [raffle, payment, amount]);
+
+    if (modal.current) {
+      modal.current.close();
+    }
+  }, [raffle, payment, amount, refetchTickets]);
 
   if (!raffle) {
     return <div>Loading...</div>;
@@ -288,7 +345,9 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     </span>
                     <span className="text-white font-bold text-xl">
                       {isConnected && tickets
-                        ? tickets?.filter((t) => t === address).length
+                        ? tickets?.filter(
+                            (t) => t.toLowerCase() === address?.toLowerCase()
+                          ).length
                         : 0}
                     </span>
                   </div>

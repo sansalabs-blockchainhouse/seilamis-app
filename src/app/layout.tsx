@@ -45,12 +45,6 @@ export default function RootLayout({
               >
                 <QueryClientProvider client={queryClient}>
                   <NetworkProvider>
-                    <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
-                      <img
-                        src="/floating.png"
-                        className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
-                      />
-                    </div>
                     <Toaster
                       position="top-right"
                       toastOptions={{

@@ -73,7 +73,7 @@ export default function Navbar() {
 
         {!isSei && freeTickets > 0 && address && address.length > 0 && (
           <div
-            className={`bg-secondary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
+            className={`bg-secondary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40 cursor-pointer`}
           >
             {freeTickets} FREE TICKETS
           </div>
@@ -81,7 +81,7 @@ export default function Navbar() {
 
         {!isSei && address && address.length > 0 && (
           <Link
-            href={"/"}
+            href={"/create/polygon"}
             className={`bg-secondary flex items-center justify-center rounded-lg p-4 font-bold text-white uppercase h-14 w-40`}
           >
             Create

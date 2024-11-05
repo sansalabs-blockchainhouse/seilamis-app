@@ -57,6 +57,19 @@ export default function Home() {
         isSei ? "bg-bg@1 bg-contain bg-white" : "bg-bg@2 bg-cover"
       }`}
     >
+      <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
+        {isSei ? (
+          <img
+            src="/floating.png"
+            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+          />
+        ) : (
+          <img
+            src="/floating_pol.png"
+            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+          />
+        )}
+      </div>
       <Navbar />
 
       <span
