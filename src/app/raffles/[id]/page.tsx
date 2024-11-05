@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Navbar from "@/components/Navbar";
+import { useNetworkContext } from "@/contexts/Network";
 
 interface IItem {
   id: string;
@@ -29,6 +30,7 @@ interface IItem {
 
 export default function Raffle({ params }: { params: { id: string } }) {
   const { accounts } = useWallet();
+  const { isSei } = useNetworkContext();
 
   const {
     data: raffle,
@@ -73,10 +75,12 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
   const [amount, setAmount] = useState("1");
 
-  const active =
-    "inline-block p-4 text-primary border-b-4 border-primary font-bold rounded-t-lg active cursor-pointer";
-  const inactive =
-    "inline-block p-4 border-b-4 border-primary rounded-t-lg hover:text-gray-300 hover:border-gray-300 cursor-pointer";
+  const active = `inline-block p-4 border-b-4 ${
+    isSei ? "border-primary text-primary" : "border-secondary text-secondary"
+  }  font-bold rounded-t-lg active cursor-pointer`;
+  const inactive = `inline-block p-4 border-b-4 ${
+    isSei ? "border-primary" : "border-secondary"
+  } rounded-t-lg hover:text-gray-300 hover:border-gray-300 cursor-pointer`;
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -178,20 +182,34 @@ export default function Raffle({ params }: { params: { id: string } }) {
   return (
     <>
       {!isLoading && raffle && (
-        <div className="font-poppins h-full flex flex-col items-center justify-between  bg-sky bg-no-repeat bg-contain bg-white">
+        <div
+          className={`flex min-h-screen flex-col items-center bg-cover bg-no-repeat ${
+            isSei ? "bg-bg@1" : "bg-bg@2"
+          }`}
+        >
           <Navbar />
 
           <div className="flex flex-col items-start gap-4 justify-between p-5">
             <Link href={"/"} className="flex items-center gap-2">
-              <span className="text-black font-bold text-base">
+              <span
+                className={`${
+                  isSei ? "text-black" : "text-white"
+                } font-bold text-base`}
+              >
                 <IoArrowBackOutline />
               </span>
-              <span className="text-black font-bold text-base">Go back</span>
+              <span
+                className={`${
+                  isSei ? "text-black" : "text-white"
+                } font-bold text-base`}
+              >
+                Go back
+              </span>
             </Link>
             <div className="flex flex-col md:flex-row items-start gap-5 justify-between">
               <div className="flex flex-col w-full md:w-auto">
                 <div
-                  className="bg-card_bg w-full bg-bottom  md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
+                  className="w-full bg-bottom  md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
                   style={{
                     backgroundImage: `url(${raffle.image})`,
                     backgroundSize: "cover",
@@ -205,19 +223,31 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     value={amount}
                     pattern="[0-9]*"
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-20 text-xl text-center h-16 rounded-lg bg-primary border border-white border-opacity-20 py-2 focus:outline-none text-white text-opacity-90"
+                    className={`${
+                      isSei
+                        ? "bg-primary border border-white border-opacity-20"
+                        : "bg-black border border-white"
+                    } w-20 text-xl text-center h-16 rounded-lg py-2 focus:outline-none text-white text-opacity-90`}
                   />
                   <button
                     disabled={raffle.winner ? true : false}
                     onClick={() => handleBuy()}
-                    className="flex-1 px-6 py-3 h-16 bg-primary rounded-lg text-white hover:opacity-70 font-bold"
+                    className={`${
+                      isSei
+                        ? "bg-primary border border-white border-opacity-20"
+                        : "bg-black border border-white"
+                    } flex-1 px-6 py-3 h-16 rounded-lg text-white hover:opacity-70 font-bold`}
                   >
                     Buy for {raffle.price * Number(amount)} SEI
                   </button>
                 </div>
               </div>
 
-              <div className="flex flex-col p-5 w-full md:w-96 h-72 bg-primary rounded-xl space-y-5 overflow-y-scroll">
+              <div
+                className={`${
+                  isSei ? "bg-primary" : "bg-secondary"
+                } flex flex-col p-5 w-full md:w-96 h-72 rounded-xl space-y-5 overflow-y-scroll`}
+              >
                 <span className="text-white font-bold text-sm">
                   Terms and conditions
                 </span>
@@ -256,7 +286,13 @@ export default function Raffle({ params }: { params: { id: string } }) {
                 </span>
               </div>
             </div>
-            <span className="text-3xl text-black font-bold">{raffle.name}</span>
+            <span
+              className={`${
+                isSei ? "text-black" : "text-white"
+              } text-3xl font-bold`}
+            >
+              {raffle.name}
+            </span>
 
             <div className="text-c font-bold text-center text-gray-500 ">
               <ul className="flex flex-wrap gap-2">
@@ -276,7 +312,11 @@ export default function Raffle({ params }: { params: { id: string } }) {
             </div>
 
             {activeTab === "details" && (
-              <div className="flex flex-col gap-5 mt-5 bg-primary rounded-lg p-2">
+              <div
+                className={`flex flex-col gap-5 mt-5 ${
+                  isSei ? "bg-primary" : "bg-black"
+                } rounded-lg p-2`}
+              >
                 <div className="flex gap-10 flex-col md:flex-row">
                   <div className="flex flex-col gap-2">
                     <span className="text-white font-bold text-opacity-50 text-lg">
@@ -341,7 +381,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
             )}
 
             {activeTab === "participants" && tickets && (
-              <div className="relative bg-primary overflow-x-auto mt-5">
+              <div className={`relative ${isSei ? 'bg-primary' : 'bg-black'} overflow-x-auto mt-5`}>
                 <table className="w-full text-sm text-justify rtl:text-right text-white">
                   <thead className="text-base font-bold text-white">
                     <tr>

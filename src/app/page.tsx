@@ -1,8 +1,12 @@
+"use client";
+
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
 import { Amatic_SC } from "next/font/google";
-import { Suspense } from "react";
-import Loading from "./loading";
+import { useNetworkContext } from "@/contexts/Network";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/services/api";
+import CardPolygon from "@/components/Polygon/Card";
 
 interface IItem {
   id: string;
@@ -20,29 +24,64 @@ interface IItem {
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
-const getRaffles = async () => {
-  const res = await fetch('https://seilamis-api-ef7dacaa3a76.herokuapp.com/raffle', { cache: 'no-store' });
-  await Promise.all([new Promise(resolve => setTimeout(resolve, 3000))]);
-  const raffles: IItem[] = await res.json();
-  return raffles;
-};
+export default function Home() {
+  const { data: raffles, isFetching } = useQuery({
+    queryKey: ["raffles-list"],
+    queryFn: (): Promise<IItem[]> =>
+      api.get(`raffle`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
 
+  const { data: raffles_polygon } = useQuery({
+    queryKey: ["raffles-list-polygon"],
+    queryFn: (): Promise<any[]> =>
+      api.get(`raffle/all/polygon`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+  });
 
-export default async function Home() {
-  const raffles = await getRaffles();
+  const { isSei } = useNetworkContext();
+
+  if (isFetching && isSei) {
+    return (
+      <div className="min-h-screen rounded-xl bg-[#89E1FF] flex items-center justify-center">
+        <img src="/cloud.png" className="w-40 animate-pulse " alt="sky" />
+      </div>
+    );
+  }
 
   return (
-    <Suspense fallback={<Loading />}>
-      <main className="flex min-h-screen flex-col items-center bg-sky bg-no-repeat bg-contain bg-white">
-        <Navbar />
+    <main
+      className={`flex min-h-screen flex-col items-center bg-no-repeat  ${
+        isSei ? "bg-bg@1 bg-contain bg-white" : "bg-bg@2 bg-cover"
+      }`}
+    >
+      <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
+        {isSei ? (
+          <img
+            src="/floating.png"
+            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+          />
+        ) : (
+          <img
+            src="/floating_pol.png"
+            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+          />
+        )}
+      </div>
+      <Navbar />
 
-        <span
-          className={`${amantic.className} uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          ending soon
-        </span>
-        <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-          {raffles
+      <span
+        className={`${
+          isSei ? amantic.className + " text-primary" : "font-london text-white"
+        } uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+      >
+        ending soon
+      </span>
+      <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
+        {isSei &&
+          raffles
             ?.filter((item) => !item.winner)
             .sort(
               (a: any, b: any) =>
@@ -64,16 +103,50 @@ export default async function Home() {
                 isVerified={nft.isVerified}
               />
             ))}
-        </div>
+      </div>
 
-        <span
-          className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          most popular
-        </span>
+      <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
+        {!isSei &&
+          raffles_polygon
+            ?.filter(
+              (item) =>
+                item.winner === "0x0000000000000000000000000000000000000000"
+            )
+            .sort(
+              (a: any, b: any) =>
+                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
+            )
+            .slice(0, 3)
+            .map((nft, index) => (
+              <CardPolygon
+                key={index}
+                id={nft.id}
+                image={nft.image}
+                name={nft.name}
+                startTime={nft.startTime}
+                endTime={nft.endTime}
+                collectionName={nft.name.replace(/[0-9#]/g, "")}
+                price={nft.price}
+                nftId={nft.nftId}
+                raffleType={nft.raffleType}
+                ticketsSold={nft.ticketsSold}
+                creator={nft.creator}
+                winner={nft.winner}
+              />
+            ))}
+      </div>
 
-        <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-          {raffles
+      <span
+        className={`${
+          isSei ? amantic.className + " text-primary" : "font-london text-white"
+        } uppercase text-5xl md:text-8xl text-primary text-center select-none mt-10`}
+      >
+        most popular
+      </span>
+
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {isSei &&
+          raffles
             .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
             ?.filter((item) => !item.winner)
             .map((nft, index) => (
@@ -93,14 +166,47 @@ export default async function Home() {
                 />
               </div>
             ))}
-        </div>
-        <span
-          className={`${amantic.className} mt-10 uppercase text-5xl md:text-8xl text-primary text-center select-none`}
-        >
-          ended
-        </span>
-        <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-          {raffles
+      </div>
+
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {!isSei &&
+          raffles_polygon
+            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
+            ?.filter(
+              (item) =>
+                item.winner === "0x0000000000000000000000000000000000000000"
+            )
+            .map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <CardPolygon
+                  key={index}
+                  id={nft.id}
+                  image={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.name.replace(/[0-9#]/g, "")}
+                  price={nft.price}
+                  nftId={nft.nftId}
+                  raffleType={nft.raffleType}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  winner={nft.winner}
+                />
+              </div>
+            ))}
+      </div>
+
+      <span
+        className={`${
+          isSei ? amantic.className + " text-primary" : "font-london text-white"
+        } uppercase text-5xl md:text-8xl text-primary text-center select-none mt-10`}
+      >
+        ended
+      </span>
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {isSei &&
+          raffles
             .sort((a, b) => {
               const dateA = new Date(a.endTime).getTime();
               const dateB = new Date(b.endTime).getTime();
@@ -125,9 +231,39 @@ export default async function Home() {
                 />
               </div>
             ))}
-        </div>
-
-      </main>
-    </Suspense>
+      </div>
+      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
+        {!isSei &&
+          raffles_polygon
+            .sort((a, b) => {
+              const dateA = new Date(a.endTime).getTime();
+              const dateB = new Date(b.endTime).getTime();
+              return dateB - dateA;
+            })
+            ?.filter(
+              (item) =>
+                item.winner !== "0x0000000000000000000000000000000000000000"
+            )
+            ?.map((nft, index) => (
+              <div key={index} className="carousel-item">
+                <CardPolygon
+                  key={index}
+                  id={nft.nftId}
+                  image={nft.image}
+                  name={nft.name}
+                  startTime={nft.startTime}
+                  endTime={nft.endTime}
+                  collectionName={nft.name.replace(/[0-9#]/g, "")}
+                  price={nft.price}
+                  nftId={nft.nftId}
+                  raffleType={nft.raffleType}
+                  ticketsSold={nft.ticketsSold}
+                  creator={nft.creator}
+                  winner={nft.winner}
+                />
+              </div>
+            ))}
+      </div>
+    </main>
   );
 }

@@ -2,10 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0;
   padding: 0;
 }
@@ -15,3 +13,28 @@ body {
     text-wrap: balance;
   }
 }
+
+[data-testid="connect-wallet"] {
+  text-indent: -9999px; 
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-testid="connect-wallet"]::before {
+  content: "Connect"; 
+  position: absolute;
+  text-indent: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+
+@font-face {
+  font-family: "London";
+  src: url("/LondonFill.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+

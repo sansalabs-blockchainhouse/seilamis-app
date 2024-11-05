@@ -1,15 +1,28 @@
 "use client";
-import type { Metadata } from "next";
-import { Amatic_SC, Inter } from "next/font/google";
 import "./globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import { Inter } from "next/font/google";
 import { SeiWalletProvider } from "@sei-js/react";
-import Navbar from "@/components/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
+import NetworkProvider from "@/contexts/Network";
+
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+
+import { WagmiProvider } from "wagmi";
+
+import { polygon } from "wagmi/chains";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const queryClient = new QueryClient();
+
+const config = getDefaultConfig({
+  appName: "My RainbowKit App",
+  projectId: "YOUR_PROJECT_ID",
+  chains: [polygon],
+  ssr: true,
+});
 
 export default function RootLayout({
   children,
@@ -19,37 +32,39 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SeiWalletProvider
-          chainConfiguration={{
-            chainId: "pacific-1",
-            restUrl: "https://sei-api.polkachu.com/",
-            rpcUrl: "https://sei-rpc.polkachu.com/",
-          }}
-          wallets={["compass", "fin", "keplr", "leap"]}
-        >
+        <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
-              <img
-                src="/floating.png"
-                className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
-              />
-            </div>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  border: "1px solid #FFFFFF",
-                  color: "#FFFFFF",
-                  fontWeight: "bold",
-                  backgroundColor: "#AA6938",
-                  padding: "12px",
-                  fontSize: "18px",
-                },
-              }}
-            />
-              {children}
+            <RainbowKitProvider>
+              <SeiWalletProvider
+                chainConfiguration={{
+                  chainId: "pacific-1",
+                  restUrl: "https://sei-api.polkachu.com/",
+                  rpcUrl: "https://sei-rpc.polkachu.com/",
+                }}
+                wallets={["compass", "fin", "keplr", "leap"]}
+              >
+                <QueryClientProvider client={queryClient}>
+                  <NetworkProvider>
+                    <Toaster
+                      position="top-right"
+                      toastOptions={{
+                        style: {
+                          border: "1px solid #FFFFFF",
+                          color: "#FFFFFF",
+                          fontWeight: "bold",
+                          backgroundColor: "#AA6938",
+                          padding: "12px",
+                          fontSize: "18px",
+                        },
+                      }}
+                    />
+                    {children}
+                  </NetworkProvider>
+                </QueryClientProvider>
+              </SeiWalletProvider>
+            </RainbowKitProvider>
           </QueryClientProvider>
-        </SeiWalletProvider>
+        </WagmiProvider>
       </body>
     </html>
   );
