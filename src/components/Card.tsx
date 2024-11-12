@@ -242,7 +242,7 @@ export default function Card({
               href={`/raffles/${id}`}
               className={`${
                 isSei ? "bg-primary" : "bg-secondary"
-              } flex items-center justify-center rounded-lg p-3 w-20`}
+              } flex items-center justify-center rounded-lg p-3 w-full`}
             >
               View
             </Link>
