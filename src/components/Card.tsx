@@ -1,16 +1,12 @@
 "use client";
 
-import { api } from "@/services/api";
 import { formatDateDifference } from "@/utils/formatDateDifference";
-import { calculateFee } from "@cosmjs/stargate";
-import { useSigningClient, useWallet } from "@sei-js/react";
+import { useWallet } from "@sei-js/react";
 import { useQueryClient } from "@tanstack/react-query";
-import BigNumber from "bignumber.js";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { formatWallet } from "@/utils/formatWallet";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { useNetworkContext } from "@/contexts/Network";
@@ -63,8 +59,6 @@ export default function Card({
     }
   }, [startTime, endTime, winner]);
 
-  // const handleBuy = useCallback(async () => {
-  //   try {
   //     if (winner) return
 
   //     if (!accounts.length) {
@@ -151,7 +145,7 @@ export default function Card({
 
   return (
     <div
-      className={`rounded-xl ${
+      className={`rounded-xl flex flex-col justify-between w-[18rem] min-h-[550px] ${
         isVerified ? "border-2 border-sei relative" : "border border-primary"
       } ${isSei ? "" : "bg-black border-none"}`}
     >
@@ -182,7 +176,7 @@ export default function Card({
         <span
           className={`${
             isSei ? "text-black" : "text-white"
-          } font-bold text-xl mt-2`}
+          } font-bold text-xl mt-2 flex-wrap`}
         >
           {name}
         </span>
@@ -229,15 +223,6 @@ export default function Card({
       <div className="flex justify-between px-3 py-3">
         {!winner && (
           <>
-            {/* <button
-              disabled={winner ? true : false}
-              onClick={handleBuy}
-              className={`${
-                isSei ? "bg-primary" : "bg-secondary"
-              } bg-primary rounded-lg p-3 w-44`}
-            >
-              Buy
-            </button> */}
             <Link
               href={`/raffles/${id}`}
               className={`${
