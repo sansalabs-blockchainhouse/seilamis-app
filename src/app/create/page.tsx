@@ -29,7 +29,6 @@ export default function Create() {
   const { offlineSigner, accounts } = useWallet();
   const { signingCosmWasmClient } = useSigningCosmWasmClient();
   const { cosmWasmClient } = useCosmWasmClient();
-  const { isSei, setIsSei } = useNetworkContext();
 
   const [currentNft, setCurrentNft] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +40,7 @@ export default function Create() {
 
   const [terms, setTerms] = useState<boolean>(false);
   const [isVerified, setIsVerified] = useState<boolean>(false);
+  const isSei = true
 
   const { data: wallets } = useQuery({
     queryKey: ["wallets-list"],
@@ -55,13 +55,13 @@ export default function Create() {
       if (!cosmWasmClient) return;
 
       if (!currentNft) {
-        return toastError("Select a valid nft!", isSei);
+        return toastError("Select a valid nft!", true);
       }
 
       if (!offlineSigner || !signingCosmWasmClient) return;
 
       if (days === 0) {
-        return toastError("Select a valid raffle duration!", isSei);
+        return toastError("Select a valid raffle duration!", true);
       }
 
       const fee = calculateFee(228605, "0.1usei");
@@ -81,7 +81,7 @@ export default function Create() {
           ),
         },
       };
-      toastLoading("Sending...", isSei);
+      toastLoading("Sending...", true);
 
       const response = await signingCosmWasmClient.sign(
         accounts[0].address,
@@ -112,12 +112,12 @@ export default function Create() {
 
       toast.dismiss();
 
-      toastSuccess("Success!", isSei);
+      toastSuccess("Success!", true);
     } catch (error: any) {
       if (error.name === "AxiosError") {
-        toastError(error.response.data.message, isSei);
+        toastError(error.response.data.message, true);
       } else {
-        toastError("Something went wrong", isSei);
+        toastError("Something went wrong", true);
       }
     }
   }, [
@@ -130,7 +130,6 @@ export default function Create() {
     days,
     price,
     isVerified,
-    isSei,
   ]);
 
   const addDays = (days: number) => {
@@ -142,28 +141,16 @@ export default function Create() {
   return (
     <>
       <div
-        className={`flex min-h-screen flex-col items-center bg-cover bg-no-repeat ${
-          isSei ? "bg-bg@1" : "bg-bg@2"
-        }`}
+        className={`flex min-h-screen flex-col items-center bg-cover bg-no-repeat bg-bg@1`}
       >
         {" "}
         <Navbar />
         <div className="flex flex-col items-start gap-4 justify-between p-5">
           <Link href={"/"} className="flex items-center gap-2">
-            <span
-              className={`${
-                isSei ? "text-black" : "text-white"
-              } font-bold text-base`}
-            >
+            <span className={`text-black font-bold text-base`}>
               <IoArrowBackOutline />
             </span>
-            <span
-              className={`${
-                isSei ? "text-black" : "text-white"
-              } font-bold text-base`}
-            >
-              Go back
-            </span>
+            <span className={`text-black font-bold text-base`}>Go back</span>
           </Link>
           <div className="flex flex-col md:flex-row items-start gap-12 justify-between">
             {!currentNft && (
@@ -174,9 +161,7 @@ export default function Create() {
                   }
                   setIsOpen(true);
                 }}
-                className={`${
-                  isSei ? "bg-primary" : "bg-black"
-                } w-full md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4`}
+                className={`bg-primary w-full md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4`}
               >
                 <span className="text-7xl text-white">
                   <IoIosAddCircleOutline />
