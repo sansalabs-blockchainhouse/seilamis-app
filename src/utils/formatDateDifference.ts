@@ -14,7 +14,7 @@ function formatDateDifference(startDate: string, endDate: string): string {
     );
     const seconds: number = Math.floor((timeDifference % (1000 * 60)) / 1000);
   
-    return `${days}d/ ${hours}h/ ${minutes}min/ ${seconds}s`;
+    return `${days}d/${hours}h/${minutes}min/${seconds}s`;
   }
   
   function formatDateDifferenceArray(

@@ -7,6 +7,8 @@ import { useNetworkContext } from "@/contexts/Network";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import CardPolygon from "@/components/Polygon/Card";
+import localFont from "next/font/local";
+import CardBase from "@/components/Base/Card";
 
 interface IItem {
   id: string;
@@ -20,249 +22,239 @@ interface IItem {
   winner?: string;
   ticketsSold: number;
   isVerified?: boolean;
+  nftId?: string;
+  raffleType?: number;
+  paymentToken?: string;
 }
 
 const amantic = Amatic_SC({ weight: "700", subsets: ["latin"] });
 
+const arcade = localFont({
+  src: "../../public/ARCADE_N.ttf",
+  variable: "--font-arcade",
+});
+
+const networkStyles = {
+  sei: {
+    mainBg: "bg-bg@1 bg-contain bg-white",
+    floatingImg: "/floating.png",
+    headingClass: `${amantic.className} text-primary text-5xl md:text-8xl`,
+  },
+  polygon: {
+    mainBg: "bg-bg@2 bg-cover",
+    floatingImg: "/floating_pol.png",
+    headingClass: `text-white text-5xl md:text-8xl`,
+  },
+  base: {
+    mainBg: "bg-black",
+    floatingImg: "/float_base.png",
+    headingClass: `${arcade.className} text-white text-xl md:text-6xl`,
+  },
+};
+
+const sortByEndTimeAsc = (a: IItem, b: IItem) =>
+  new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
+const sortByEndTimeDesc = (a: IItem, b: IItem) =>
+  new Date(b.endTime).getTime() - new Date(a.endTime).getTime();
+const sortByPopularity = (a: IItem, b: IItem) =>
+  b.ticketsSold * b.price - a.ticketsSold * a.price;
+
 export default function Home() {
+  const { selectedNetwork } = useNetworkContext();
+
+  // Query para a rede "sei"
   const { data: raffles, isFetching } = useQuery({
-    queryKey: ["raffles-list"],
+    queryKey: ["raffles-list", "sei"],
     queryFn: (): Promise<IItem[]> =>
       api.get(`raffle`).then((response) => response.data),
     refetchOnWindowFocus: false,
     initialData: [],
+    enabled: selectedNetwork === "sei",
   });
 
-  const { data: raffles_polygon } = useQuery({
-    queryKey: ["raffles-list-polygon"],
-    queryFn: (): Promise<any[]> =>
+  // Query para "polygon"
+  const { data: rafflesPolygon } = useQuery({
+    queryKey: ["raffles-list", "polygon"],
+    queryFn: (): Promise<IItem[]> =>
       api.get(`raffle/all/polygon`).then((response) => response.data),
     refetchOnWindowFocus: false,
     initialData: [],
+    enabled: selectedNetwork === "polygon",
   });
 
-  const { isSei } = useNetworkContext();
+  // Query para "base"
+  const { data: rafflesBase } = useQuery({
+    queryKey: ["raffles-list", "base"],
+    queryFn: (): Promise<IItem[]> =>
+      api.get(`raffle/all/base`).then((response) => response.data),
+    refetchOnWindowFocus: false,
+    initialData: [],
+    enabled: selectedNetwork === "base",
+  });
 
-  if (isFetching && isSei) {
+  // Para redes não "sei", escolhemos a query correta com base no selectedNetwork
+  const rafflesNonSei =
+    selectedNetwork === "polygon"
+      ? rafflesPolygon
+      : selectedNetwork === "base"
+      ? rafflesBase
+      : [];
+
+  if (isFetching && selectedNetwork === "sei") {
     return (
       <div className="min-h-screen rounded-xl bg-[#89E1FF] flex items-center justify-center">
-        <img src="/cloud.png" className="w-40 animate-pulse " alt="sky" />
+        <img src="/cloud.png" className="w-40 animate-pulse" alt="sky" />
       </div>
     );
   }
 
+  // Função para renderizar o card conforme a rede selecionada
+  const renderCard = (item: IItem, index: number) => {
+    if (selectedNetwork === "sei") {
+      return (
+        <Card
+          key={index}
+          id={item.id}
+          imgUrl={item.image}
+          name={item.name}
+          startTime={item.startTime}
+          endTime={item.endTime}
+          collectionName={item.collectionName}
+          price={item.price}
+          ticketsSold={item.ticketsSold}
+          creator={item.creator}
+          isVerified={item.isVerified}
+          winner={item.winner}
+        />
+      );
+    }
+    if (selectedNetwork === "polygon") {
+      return (
+        <CardPolygon
+          key={index}
+          id={item.id}
+          image={item.image}
+          name={item.name}
+          startTime={item.startTime}
+          endTime={item.endTime}
+          collectionName={item.name.replace(/[0-9#]/g, "")}
+          price={[item.price]}
+          nftId={item.nftId as string}
+          raffleType={item.raffleType as number}
+          ticketsSold={item.ticketsSold}
+          creator={item.creator}
+          winner={item.winner}
+        />
+      );
+    }
+    if (selectedNetwork === "base") {
+      return (
+        <CardBase
+          key={index}
+          id={item.id}
+          image={item.image}
+          name={item.name}
+          startTime={item.startTime}
+          endTime={item.endTime}
+          collectionName={item.name.replace(/[0-9#]/g, "")}
+          price={item.price}
+          nftId={item.nftId as string}
+          raffleType={item.raffleType as number}
+          ticketsSold={item.ticketsSold}
+          creator={item.creator}
+          paymentToken={item.paymentToken}
+          winner={item.winner}
+        />
+      );
+    }
+  };
+
+  // Preparando os arrays para cada seção
+  const endingSoonItems =
+    selectedNetwork === "sei"
+      ? raffles
+          .filter((item) => !item.winner)
+          .sort(sortByEndTimeAsc)
+          .slice(0, 3)
+      : rafflesNonSei
+          .filter(
+            (item) =>
+              item.winner === "0x0000000000000000000000000000000000000000"
+          )
+          .sort(sortByEndTimeAsc)
+          .slice(0, 3);
+
+  const mostPopularItems =
+    selectedNetwork === "sei"
+      ? raffles.filter((item) => !item.winner).sort(sortByPopularity)
+      : rafflesNonSei
+          .filter(
+            (item) =>
+              item.winner === "0x0000000000000000000000000000000000000000"
+          )
+          .sort(sortByPopularity);
+
+  const endedItems =
+    selectedNetwork === "sei"
+      ? raffles.filter((item) => item.winner).sort(sortByEndTimeDesc)
+      : rafflesNonSei
+          .filter(
+            (item) =>
+              item.winner !== "0x0000000000000000000000000000000000000000"
+          )
+          .sort(sortByEndTimeDesc);
+
   return (
     <main
-      className={`flex min-h-screen flex-col items-center bg-no-repeat  ${
-        isSei ? "bg-bg@1 bg-contain bg-white" : "bg-bg@2 bg-cover"
-      }`}
+      className={`flex min-h-screen flex-col items-center bg-no-repeat ${networkStyles[selectedNetwork].mainBg}`}
     >
+      {/* Imagem flutuante */}
       <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
-        {isSei ? (
-          <img
-            src="/floating.png"
-            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
-          />
-        ) : (
-          <img
-            src="/floating_pol.png"
-            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
-          />
-        )}
+        <img
+          src={networkStyles[selectedNetwork].floatingImg}
+          className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+          alt="floating"
+        />
       </div>
+
       <Navbar />
 
+      {/* Seção Ending Soon */}
       <span
-        className={`${
-          isSei ? amantic.className + " text-primary" : "font-london text-white"
-        } uppercase text-5xl md:text-8xl text-primary text-center select-none`}
+        className={`${networkStyles[selectedNetwork].headingClass} uppercase text-center select-none`}
       >
         ending soon
       </span>
       <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-        {isSei &&
-          raffles
-            ?.filter((item) => !item.winner)
-            .sort(
-              (a: any, b: any) =>
-                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
-            )
-            .slice(0, 3)
-            .map((nft, index) => (
-              <Card
-                key={index}
-                id={nft.id}
-                imgUrl={nft.image}
-                name={nft.name}
-                startTime={nft.startTime}
-                endTime={nft.endTime}
-                collectionName={nft.collectionName}
-                price={nft.price}
-                ticketsSold={nft.ticketsSold}
-                creator={nft.creator}
-                isVerified={nft.isVerified}
-              />
-            ))}
+        {endingSoonItems.map((item, index) => renderCard(item, index))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-10 mt-10">
-        {!isSei &&
-          raffles_polygon
-            ?.filter(
-              (item) =>
-                item.winner === "0x0000000000000000000000000000000000000000"
-            )
-            .sort(
-              (a: any, b: any) =>
-                (new Date(a.endTime) as any) - (new Date(b.endTime) as any)
-            )
-            .slice(0, 3)
-            .map((nft, index) => (
-              <CardPolygon
-                key={index}
-                id={nft.id}
-                image={nft.image}
-                name={nft.name}
-                startTime={nft.startTime}
-                endTime={nft.endTime}
-                collectionName={nft.name.replace(/[0-9#]/g, "")}
-                price={nft.price}
-                nftId={nft.nftId}
-                raffleType={nft.raffleType}
-                ticketsSold={nft.ticketsSold}
-                creator={nft.creator}
-                winner={nft.winner}
-              />
-            ))}
-      </div>
-
+      {/* Seção Most Popular */}
       <span
-        className={`${
-          isSei ? amantic.className + " text-primary" : "font-london text-white"
-        } uppercase text-5xl md:text-8xl text-primary text-center select-none mt-10`}
+        className={`${networkStyles[selectedNetwork].headingClass} uppercase text-center select-none mt-10`}
       >
         most popular
       </span>
-
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {isSei &&
-          raffles
-            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
-            ?.filter((item) => !item.winner)
-            .map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <Card
-                  key={index}
-                  id={nft.id}
-                  imgUrl={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.collectionName}
-                  price={nft.price}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  isVerified={nft.isVerified}
-                />
-              </div>
-            ))}
+        {mostPopularItems.map((item, index) => (
+          <div key={index} className="carousel-item">
+            {renderCard(item, index)}
+          </div>
+        ))}
       </div>
 
-      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {!isSei &&
-          raffles_polygon
-            .sort((a, b) => b.ticketsSold * b.price - a.ticketsSold * a.price)
-            ?.filter(
-              (item) =>
-                item.winner === "0x0000000000000000000000000000000000000000"
-            )
-            .map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <CardPolygon
-                  key={index}
-                  id={nft.id}
-                  image={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.name.replace(/[0-9#]/g, "")}
-                  price={nft.price}
-                  nftId={nft.nftId}
-                  raffleType={nft.raffleType}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  winner={nft.winner}
-                />
-              </div>
-            ))}
-      </div>
-
+      {/* Seção Ended */}
       <span
-        className={`${
-          isSei ? amantic.className + " text-primary" : "font-london text-white"
-        } uppercase text-5xl md:text-8xl text-primary text-center select-none mt-10`}
+        className={`${networkStyles[selectedNetwork].headingClass} uppercase text-center select-none mt-10`}
       >
         ended
       </span>
       <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {isSei &&
-          raffles
-            .sort((a, b) => {
-              const dateA = new Date(a.endTime).getTime();
-              const dateB = new Date(b.endTime).getTime();
-              return dateB - dateA;
-            })
-            ?.filter((item) => item.winner)
-            ?.map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <Card
-                  key={index}
-                  id={nft.id}
-                  imgUrl={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.collectionName}
-                  price={nft.price}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  winner={nft.winner}
-                  isVerified={nft.isVerified}
-                />
-              </div>
-            ))}
-      </div>
-      <div className="flex flex-wrap w-full max-w-7xl p-4 gap-5 items-center justify-center rounded-box">
-        {!isSei &&
-          raffles_polygon
-            .sort((a, b) => {
-              const dateA = new Date(a.endTime).getTime();
-              const dateB = new Date(b.endTime).getTime();
-              return dateB - dateA;
-            })
-            ?.filter(
-              (item) =>
-                item.winner !== "0x0000000000000000000000000000000000000000"
-            )
-            ?.map((nft, index) => (
-              <div key={index} className="carousel-item">
-                <CardPolygon
-                  key={index}
-                  id={nft.nftId}
-                  image={nft.image}
-                  name={nft.name}
-                  startTime={nft.startTime}
-                  endTime={nft.endTime}
-                  collectionName={nft.name.replace(/[0-9#]/g, "")}
-                  price={nft.price}
-                  nftId={nft.nftId}
-                  raffleType={nft.raffleType}
-                  ticketsSold={nft.ticketsSold}
-                  creator={nft.creator}
-                  winner={nft.winner}
-                />
-              </div>
-            ))}
+        {endedItems.map((item, index) => (
+          <div key={index} className="carousel-item">
+            {renderCard(item, index)}
+          </div>
+        ))}
       </div>
     </main>
   );

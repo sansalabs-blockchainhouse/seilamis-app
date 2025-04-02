@@ -1,27 +1,31 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
 
+type NetworkType = "sei" | "polygon" | "base";
+
 export interface NetworkContextType {
-  isSei: boolean;
-  setIsSei: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedNetwork: NetworkType;
+  setSelectedNetwork: React.Dispatch<React.SetStateAction<NetworkType>>;
 }
 
 export const NetworkContext = createContext<NetworkContextType>({
-  isSei: true,
-  setIsSei: () => {},
+  selectedNetwork: "sei",
+  setSelectedNetwork: () => {},
 });
 
 const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isSei, setIsSei] = useState<boolean>(true);
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>("sei");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedValue = localStorage.getItem("isSei");
+      const storedValue = localStorage.getItem("selectedNetwork");
       if (storedValue) {
-        setIsSei(JSON.parse(storedValue));
+        if (["sei", "polygon", "base"].includes(storedValue)) {
+          setSelectedNetwork(storedValue as NetworkType);
+        }
       }
       setIsMounted(true);
     }
@@ -29,17 +33,17 @@ const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (isMounted) {
-      localStorage.setItem("isSei", JSON.stringify(isSei));
+      localStorage.setItem("selectedNetwork", selectedNetwork);
     }
-  }, [isSei, isMounted]);
+  }, [selectedNetwork, isMounted]);
 
   if (!isMounted) {
     return null;
   }
 
   const value = {
-    isSei,
-    setIsSei,
+    selectedNetwork,
+    setSelectedNetwork,
   };
 
   return (
@@ -47,8 +51,6 @@ const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useNetworkContext = () => {
-  return useContext(NetworkContext);
-};
+export const useNetworkContext = () => useContext(NetworkContext);
 
 export default NetworkProvider;

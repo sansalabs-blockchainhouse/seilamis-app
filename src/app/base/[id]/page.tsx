@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { GrFlag } from "react-icons/gr";
@@ -9,46 +9,38 @@ import { api } from "@/services/api";
 import toast from "react-hot-toast";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Navbar from "@/components/Navbar";
-import { getRafflePricePolygon } from "@/utils/getRafflePrice";
-import { IRafflePolygon } from "@/types";
+import { getRafflePriceBase } from "@/utils/getRafflePrice";
+import { IRaffleBase } from "@/types";
 import { useAccount, useWriteContract } from "wagmi";
-import Image from "next/image";
-import { polygon } from "viem/chains";
-import {
-  HITCOIN_POLYGON_ABI,
-  HITCOIN_POLYGON_CONTRACT_ADDRESS,
-  RAFFLE_POLYGON_ABI,
-  RAFFLE_POLYGON_CONTRACT_ADDRESS,
-} from "@/constants";
+import { base } from "viem/chains";
+import { RAFFLE_BASE_ABI, RAFFLE_BASE_CONTRACT_ADDRESS } from "@/constants";
 import { parseEther } from "viem";
 import { useWaitForTransactionReceiptAsync } from "@/hooks/useWaitForTransactionReceiptAsync";
+import localFont from "next/font/local";
+
+const arcade = localFont({
+  src: "../../../../public/ARCADE_N.ttf",
+  variable: "--font-arcade",
+});
 
 export default function Raffle({ params }: { params: { id: string } }) {
   const { address, isConnected } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { waitForTransactionReceipt } = useWaitForTransactionReceiptAsync();
-  const {
-    data: raffle,
-    refetch,
-    isLoading,
-  } = useQuery({
-    queryKey: ["raffle-polygon-id"],
-    queryFn: (): Promise<IRafflePolygon> =>
+  const { data: raffle, isLoading } = useQuery({
+    queryKey: ["raffle-base-id"],
+    queryFn: (): Promise<IRaffleBase> =>
       api
-        .get(`raffle/by-id/polygon/${params.id}`)
+        .get(`raffle/by-id/base/${params.id}`)
         .then((response) => response.data),
     refetchOnWindowFocus: false,
   });
 
-  const {
-    data: tickets,
-    refetch: refetchTickets,
-    isLoading: isLoadingTickets,
-  } = useQuery({
+  const { data: tickets, refetch: refetchTickets } = useQuery({
     queryKey: ["tickets"],
     queryFn: (): Promise<any[]> =>
       api
-        .get(`raffle-entry/history/polygon/${params.id}`)
+        .get(`raffle-entry/history/base/${params.id}`)
         .then((response) => response.data),
     refetchOnWindowFocus: false,
   });
@@ -56,12 +48,9 @@ export default function Raffle({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState("details");
 
   const [amount, setAmount] = useState("1");
-  const [payment, setPayment] = useState<"POL" | "HIT" | "TICKET">("POL");
 
-  const active = `inline-block p-4 border-b-4 border-secondary text-secondary font-bold rounded-t-lg active cursor-pointer`;
-  const inactive = `inline-block p-4 border-b-4 border-secondary rounded-t-lg hover:text-gray-300 hover:border-gray-300 cursor-pointer`;
-
-  const modal = useRef<HTMLDialogElement>(null);
+  const active = `inline-block p-4 border-b-4 border-base text-sm font-bold active cursor-pointer`;
+  const inactive = `inline-block p-4 border-b-4 border-base hover:text-gray-300 text-sm hover:border-gray-300 cursor-pointer`;
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -69,50 +58,77 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
   const handleBuy = useCallback(async () => {
     if (!raffle) return;
-    if (payment === "POL") {
+    if (raffle.paymentToken === "0x0000000000000000000000000000000000000000") {
       toast.loading("Sending...", {
         style: {
-          backgroundColor: "#722AA3",
+          backgroundColor: "#0052FF",
         },
       });
       const data = await writeContractAsync({
-        chainId: polygon.id,
-        address: RAFFLE_POLYGON_CONTRACT_ADDRESS,
+        chainId: base.id,
+        address: RAFFLE_BASE_CONTRACT_ADDRESS,
         functionName: "enterRaffle",
-        abi: RAFFLE_POLYGON_ABI,
+        abi: RAFFLE_BASE_ABI,
         args: [params.id, amount],
-        value: parseEther(String(Number(amount) * raffle.price[0])) as any,
+        value: parseEther(String(Number(amount) * raffle.price)) as any,
       });
 
       await waitForTransactionReceipt({ hash: data });
       toast.dismiss();
       toast.success("Success!", {
         style: {
-          backgroundColor: "#722AA3",
+          backgroundColor: "#0052FF",
         },
       });
-    } else if (payment === "HIT") {
-      const { data: tokenInfo } = await api.get(`token/allowance/${address}`);
+    } else {
+      const { data: tokenInfo } = await api.get(
+        `token/baseAllowance/${address}/${raffle.paymentToken}`
+      );
 
-      if (tokenInfo.allowance < Number(amount) * raffle.price[1]) {
+      if (tokenInfo.allowance < Number(amount) * raffle.price) {
         toast.loading("Sending...", {
           style: {
-            backgroundColor: "#722AA3",
+            backgroundColor: "#0052FF",
           },
         });
         const data = await writeContractAsync({
-          chainId: polygon.id,
-          address: HITCOIN_POLYGON_CONTRACT_ADDRESS,
-          functionName: "increaseAllowance",
-          abi: HITCOIN_POLYGON_ABI,
-          args: [RAFFLE_POLYGON_CONTRACT_ADDRESS, tokenInfo.balanceOf],
+          chainId: base.id,
+          address: raffle?.paymentToken as `0x${string}`,
+          functionName: "approve",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "spender",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "value",
+                  type: "uint256",
+                },
+              ],
+              name: "approve",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ],
+          args: [RAFFLE_BASE_CONTRACT_ADDRESS, tokenInfo.balanceOf],
         });
 
         await waitForTransactionReceipt({ hash: data });
         toast.dismiss();
         toast.success("Success!", {
           style: {
-            backgroundColor: "#722AA3",
+            backgroundColor: "#0052FF",
           },
         });
       }
@@ -120,15 +136,15 @@ export default function Raffle({ params }: { params: { id: string } }) {
       toast.loading("Sending..."),
         {
           style: {
-            backgroundColor: "#722AA3",
+            backgroundColor: "#0052FF",
           },
         };
 
       const data = await writeContractAsync({
-        chainId: polygon.id,
-        address: RAFFLE_POLYGON_CONTRACT_ADDRESS,
+        chainId: base.id,
+        address: RAFFLE_BASE_CONTRACT_ADDRESS,
         functionName: "enterRaffleErc20",
-        abi: RAFFLE_POLYGON_ABI,
+        abi: RAFFLE_BASE_ABI,
         args: [params.id, amount],
       });
 
@@ -136,39 +152,11 @@ export default function Raffle({ params }: { params: { id: string } }) {
       toast.dismiss();
       toast.success("Success!", {
         style: {
-          backgroundColor: "#722AA3",
+          backgroundColor: "#0052FF",
         },
       });
-    } else if (payment === "TICKET") {
-      toast.loading("Sending...", {
-        style: {
-          backgroundColor: "#722AA3",
-        },
-      });
-
-      const data = await writeContractAsync({
-        chainId: polygon.id,
-        address: RAFFLE_POLYGON_CONTRACT_ADDRESS,
-        functionName: "enterRaffleFreeTickets",
-        abi: RAFFLE_POLYGON_ABI,
-        args: [params.id, amount],
-      });
-
-      await waitForTransactionReceipt({ hash: data });
-
-      toast.dismiss();
-      toast.success("Success!", {
-        style: {
-          backgroundColor: "#722AA3",
-        },
-      });
-      await refetchTickets();
     }
-
-    if (modal.current) {
-      modal.current.close();
-    }
-  }, [raffle, payment, amount, refetchTickets]);
+  }, [raffle, amount, refetchTickets]);
 
   if (!raffle) {
     return <div>Loading...</div>;
@@ -178,11 +166,13 @@ export default function Raffle({ params }: { params: { id: string } }) {
     <>
       {!isLoading && raffle && (
         <div
-          className={`flex min-h-screen flex-col items-center bg-cover bg-no-repeat bg-bg@2`}
+          className={`bg-black flex min-h-screen flex-col items-center  ${arcade.className} `}
         >
           <Navbar />
 
-          <div className="flex flex-col items-start gap-4 justify-between p-5">
+          <div
+            className={`flex flex-col items-start gap-4 justify-between p-5`}
+          >
             <Link href={"/"} className="flex items-center gap-2">
               <span className={`text-white font-bold text-base`}>
                 <IoArrowBackOutline />
@@ -192,7 +182,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
             <div className="flex flex-col md:flex-row items-start gap-5 justify-between">
               <div className="flex flex-col w-full md:w-auto">
                 <div
-                  className="w-full bg-bottom  md:w-80 h-80 rounded-xl flex items-center justify-center flex-col gap-4"
+                  className="w-full bg-bottom  md:w-80 h-80 flex items-center justify-center flex-col gap-4"
                   style={{
                     backgroundImage: `url(${raffle.image})`,
                     backgroundSize: "cover",
@@ -206,16 +196,11 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     value={amount}
                     pattern="[0-9]*"
                     onChange={(e) => setAmount(e.target.value)}
-                    className={`bg-black border border-white w-20 text-xl text-center h-16 rounded-lg py-2 focus:outline-none text-white text-opacity-90`}
+                    className={`bg-black border border-white w-20 text-lg text-center h-16 py-2 focus:outline-none text-white text-opacity-90`}
                   />
                   <button
-                    // disabled={raffle.winner ? true : false}
-                    onClick={() => {
-                      if (modal.current) {
-                        modal.current.showModal();
-                      }
-                    }}
-                    className={`bg-black border border-white flex-1 px-6 py-3 h-16 rounded-lg text-white hover:opacity-70 font-bold`}
+                    onClick={handleBuy}
+                    className={`bg-black border border-white flex-1 px-6 py-3 h-16 text-white hover:opacity-70 font-bold`}
                   >
                     Buy
                   </button>
@@ -223,23 +208,23 @@ export default function Raffle({ params }: { params: { id: string } }) {
               </div>
 
               <div
-                className={`bg-secondary flex flex-col p-5 w-full md:w-96 h-72 rounded-xl space-y-5 overflow-y-scroll`}
+                className={`bg-base flex flex-col p-5 w-full md:w-96 h-72 space-y-5 overflow-y-scroll pixel-btn`}
               >
                 <span className="text-white font-bold text-sm">
                   Terms and conditions
                 </span>
-                <span className="text-white text-base font-normal">
+                <span className="text-white text-sm font-normal">
                   1. All NFT prizes are held by raffle in escrow and and will be
                   sent automatically after winner is drawn.
                 </span>
-                <span className="text-white text-base font-normal">
+                <span className="text-white text-sm font-normal">
                   2. Raffle tickets cannot be refunded once bought.
                 </span>
-                <span className="text-white text-base font-normal">
+                <span className="text-white text-sm font-normal">
                   3. Raffle tickets will not be refunded if you did not win the
                   raffle.
                 </span>
-                <span className="text-white text-base font-normal">
+                <span className="text-white text-sm font-normal">
                   4. This raffle platform is unique. When the timer expires, the
                   raffle will be drawn. No ticket minimums or maximums are
                   enforced.
@@ -247,7 +232,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col mt-2 gap-2 bg-card_bg p-5 rounded-lg w-full md:w-1/2">
+          <div className="flex flex-col mt-2 gap-2 bg-card_bg p-5 w-full md:w-1/2">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-white mt-1 text-sm font-semibold">
@@ -263,11 +248,11 @@ export default function Raffle({ params }: { params: { id: string } }) {
                 </span>
               </div>
             </div>
-            <span className={`text-white text-3xl font-bold`}>
+            <span className={`text-white text-lg font-bold`}>
               {raffle.name}
             </span>
 
-            <div className="text-c font-bold text-center text-gray-500 ">
+            <div className="font-bold text-center text-gray-500 ">
               <ul className="flex flex-wrap gap-2">
                 <li onClick={() => handleTabClick("details")}>
                   <a className={activeTab === "details" ? active : inactive}>
@@ -285,15 +270,13 @@ export default function Raffle({ params }: { params: { id: string } }) {
             </div>
 
             {activeTab === "details" && (
-              <div
-                className={`flex flex-col gap-5 mt-5 bg-black rounded-lg p-2`}
-              >
+              <div className={`flex flex-col gap-5 mt-5 bg-black p-2`}>
                 <div className="flex gap-10 flex-col md:flex-row">
                   <div className="flex flex-col gap-2">
-                    <span className="text-white font-bold text-opacity-50 text-lg">
+                    <span className="text-white font-bold text-opacity-50 text-base">
                       Raffle draws in:
                     </span>
-                    <span className="text-white font-bold text-xl">
+                    <span className="text-white font-bold text-base">
                       {new Intl.DateTimeFormat("en-US", {
                         year: "numeric",
                         month: "short",
@@ -307,25 +290,29 @@ export default function Raffle({ params }: { params: { id: string } }) {
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span className="text-white font-bold text-opacity-50 text-lg">
+                    <span className="text-white font-bold text-opacity-50 text-base">
                       Ticket cost:
                     </span>
-                    <span className="text-white text-xl font-bold">
-                      {getRafflePricePolygon(raffle.raffleType, raffle.price)}
+                    <span className="text-white text-lg font-bold">
+                      {getRafflePriceBase(
+                        raffle.raffleType,
+                        raffle.price,
+                        raffle.paymentToken as string
+                      )}
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span className="text-white font-bold text-opacity-50 text-lg">
+                    <span className="text-white font-bold text-opacity-50 text-base">
                       Tickets sold:
                     </span>
-                    <span className="text-white font-bold text-xl">
+                    <span className="text-white font-bold text-lg">
                       {raffle.ticketsSold}
                     </span>
                   </div>
                 </div>
                 <div className="flex gap-10 flex-col md:flex-row">
                   <div className="flex flex-col gap-2">
-                    <span className="text-white font-bold text-opacity-50 text-lg">
+                    <span className="text-white font-bold text-opacity-50 text-base">
                       Raffler
                     </span>
                     <CopyToClipboard
@@ -334,16 +321,16 @@ export default function Raffle({ params }: { params: { id: string } }) {
                         toast.success("Successfully copied to clipboard")
                       }
                     >
-                      <span className="text-white font-bold text-xl">
+                      <span className="text-white font-bold text-lg">
                         {raffle.creator.slice(0, 5)}...
                       </span>
                     </CopyToClipboard>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span className="text-white font-bold text-opacity-50 text-lg">
+                    <span className="text-white font-bold text-opacity-50 text-base">
                       Your tickets:
                     </span>
-                    <span className="text-white font-bold text-xl">
+                    <span className="text-white font-bold text-lg">
                       {isConnected && tickets
                         ? tickets?.filter(
                             (t) => t.toLowerCase() === address?.toLowerCase()
@@ -387,49 +374,6 @@ export default function Raffle({ params }: { params: { id: string } }) {
           </div>
         </div>
       )}
-
-      <dialog id="my_modal_1" className="modal" ref={modal}>
-        <div className="modal-box flex flex-col items-center justify-center bg-secondary">
-          <h3 className="font-bold text-lg">Payment Method</h3>
-          <div className="flex gap-5 mt-4">
-            <div
-              onClick={() => setPayment("POL")}
-              className={`flex gap-1 flex-col items-center justify-center bg-black ${
-                payment == "POL" ? "bg-opacity-100" : "bg-opacity-35"
-              }  rounded-lg py-2 w-28 cursor-pointer`}
-            >
-              <Image alt="pol" src="/pol.png" width={80} height={80} />
-              <span className="">POL</span>
-            </div>
-            <div
-              onClick={() => setPayment("HIT")}
-              className={`flex gap-1 flex-col items-center justify-center bg-black ${
-                payment == "HIT" ? "bg-opacity-100" : "bg-opacity-35"
-              }  rounded-lg py-2 w-28 cursor-pointer`}
-            >
-              <Image alt="hitcoin" src="/hitcoin.png" width={80} height={80} />
-              <span>HITCOIN</span>
-            </div>
-            <div
-              onClick={() => setPayment("TICKET")}
-              className={`flex gap-1 flex-col items-center justify-center bg-black ${
-                payment == "TICKET" ? "bg-opacity-100" : "bg-opacity-35"
-              }  rounded-lg py-2 w-28 cursor-pointer`}
-            >
-              <Image alt="ticket" src="/ticket.png" width={78} height={78} />
-              <span>TICKETS</span>
-            </div>
-          </div>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn">Cancel</button>
-            </form>
-            <button onClick={handleBuy} className="btn">
-              Confirm
-            </button>
-          </div>
-        </div>
-      </dialog>
     </>
   );
 }

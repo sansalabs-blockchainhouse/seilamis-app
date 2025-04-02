@@ -27,6 +27,23 @@ export interface IRafflePolygon {
     winner?: string;
 }
 
+export interface IRaffleBase {
+    id: string;
+    collectionName: string;
+    nftId: string;
+    creator: string;
+    name: string;
+    image: string;
+    price: number;
+    startTime: string;
+    endTime: string;
+    ticketsSold: number;
+    raffleType: number;
+    paymentToken?: string;
+    winner?: string;
+}
+
+
 export enum RaffleType {
     Normal = 0,
     Token = 1,

@@ -11,7 +11,8 @@ const config: Config = {
       colors: {
         primary: "#AA6938",
         secondary: "#722AA3",
-        sei: '#9E1E1A'
+        sei: '#9E1E1A',
+        base: '#0052FF'
       },
       backgroundImage: {
         "bg@1": "url('/bg@1.jpg')",
@@ -20,6 +21,8 @@ const config: Config = {
     },
     fontFamily: {
       london: ["London", "sans-serif"],
+      arcade: ["Arcade", "sans-serif"],
+
     },
   },
   plugins: [require("daisyui"), require("tailwindcss-animated")],

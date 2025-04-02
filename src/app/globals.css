@@ -31,10 +31,37 @@ body {
 }
 
 
-@font-face {
-  font-family: "London";
-  src: url("/LondonFill.ttf") format("ttf");
-  font-weight: normal;
-  font-style: normal;
+@layer base {
+  @font-face {
+    font-family: "London";
+    src: url("/LondonFill.ttf") format("ttf");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  
+  @font-face {
+    font-family: "Arcade";
+    src: url("/ARCADE_N.ttf") format("ttf");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
 }
 
+
+
+
+.pixel-btn {
+  @apply text-white py-[15px] px-[40px] m-[10px] text-[14px] border-0 cursor-pointer;
+  box-shadow: 0px 5px black, 0px -5px black, 5px 0px black, -5px 0px black,
+              0px 10px #00000038, 5px 5px #00000038, -5px 5px #00000038,
+              inset 0px 5px #ffffff36;
+  transition: transform 0.1s;
+}
+
+.pixel-btn:active {
+  transform: translateY(5px);
+  box-shadow: 0px 5px black, 0px -5px black, 5px 0px black, -5px 0px black,
+              inset 0px 5px #00000038;
+}

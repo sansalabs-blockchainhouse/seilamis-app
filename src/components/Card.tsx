@@ -39,9 +39,8 @@ export default function Card({
   isVerified,
 }: ICard) {
   const { accounts } = useWallet();
-
-  // const { signingClient } = useSigningClient();
-  const { isSei } = useNetworkContext();
+  const { selectedNetwork } = useNetworkContext();
+  const isSei = selectedNetwork === "sei";
 
   const [timeDifference, setTimeDifference] = useState(
     formatDateDifference(startTime, endTime)
@@ -58,90 +57,6 @@ export default function Card({
       return () => clearInterval(interval);
     }
   }, [startTime, endTime, winner]);
-
-  //     if (winner) return
-
-  //     if (!accounts.length) {
-  //       return toast.error("Connect your wallet");
-  //     }
-
-  //     if (!signingClient) {
-  //       return toast.error("Something went wrong");
-  //     }
-
-  //     toast.loading("Sending...");
-  //     const fee = calculateFee(200000, "0.1usei");
-  //     const totalPrice = price * 1e6 * Number(1);
-
-  //     const messages = [
-  //       {
-  //         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-  //         value: {
-  //           fromAddress: accounts[0].address,
-  //           toAddress: creator,
-  //           amount: [
-  //             {
-  //               denom: "usei",
-  //               amount: new BigNumber(totalPrice * 0.97).toString(),
-  //             },
-  //           ],
-  //         },
-  //       },
-  //       {
-  //         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-  //         value: {
-  //           fromAddress: accounts[0].address,
-  //           toAddress: "sei13hpc6h3dcd705hyugt9wac0dsyyp0fvg06c7dv",
-  //           amount: [
-  //             {
-  //               denom: "usei",
-  //               amount: new BigNumber(totalPrice * 0.03).toString(),
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     ];
-
-  //     const response = await signingClient.sign(
-  //       accounts[0].address,
-  //       messages,
-  //       fee,
-  //       ""
-  //     );
-
-  //     const txRaw = TxRaw.fromPartial({
-  //       bodyBytes: response.bodyBytes,
-  //       authInfoBytes: response.authInfoBytes,
-  //       signatures: response.signatures,
-  //     });
-
-  //     const txBytes = TxRaw.encode(txRaw).finish();
-  //     const body = {
-  //       wallet: accounts[0].address,
-  //       tx: Object.values(txBytes),
-  //       amount: 1,
-  //       raffleId: id,
-  //     };
-
-  //     await api.post("raffle-entry", body);
-
-  //     toast.dismiss();
-
-  //     toast.success("Success!");
-  //     await queryClient.prefetchQuery({
-  //       queryKey: ["raffles-list"],
-  //     });
-  //   } catch (error: any) {
-  //     console.log(error);
-  //     toast.dismiss();
-
-  //     if (error.name === "AxiosError") {
-  //       toast.error(error.response.data.message);
-  //     } else {
-  //       toast.error("Something went wrong");
-  //     }
-  //   }
-  // }, [accounts, signingClient]);
 
   return (
     <div
@@ -222,16 +137,14 @@ export default function Card({
       </div>
       <div className="flex justify-between px-3 py-3">
         {!winner && (
-          <>
-            <Link
-              href={`/raffles/${id}`}
-              className={`${
-                isSei ? "bg-primary" : "bg-secondary"
-              } flex items-center justify-center rounded-lg p-3 w-full`}
-            >
-              View
-            </Link>
-          </>
+          <Link
+            href={`/raffles/${id}`}
+            className={`${
+              isSei ? "bg-primary" : "bg-secondary"
+            } flex items-center justify-center rounded-lg p-3 w-full`}
+          >
+            View
+          </Link>
         )}
         {winner && (
           <button

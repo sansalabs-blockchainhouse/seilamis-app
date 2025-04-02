@@ -11,7 +11,7 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { WagmiProvider } from "wagmi";
 
-import { polygon } from "wagmi/chains";
+import { base, polygon } from "wagmi/chains";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
-  chains: [polygon],
+  chains: [polygon, base],
   ssr: true,
 });
 

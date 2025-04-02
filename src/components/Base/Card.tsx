@@ -1,17 +1,22 @@
 "use client";
 
 import { formatDateDifference } from "@/utils/formatDateDifference";
-import { useSigningClient, useWallet } from "@sei-js/react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import { formatWallet } from "@/utils/formatWallet";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { IRafflePolygon } from "@/types";
-import { getRafflePricePolygon } from "@/utils/getRafflePrice";
+import { IRaffleBase } from "@/types";
+import { getRafflePriceBase } from "@/utils/getRafflePrice";
+import localFont from "next/font/local";
 
-export default function CardPolygon({
+const arcade = localFont({
+  src: "../../../public/ARCADE_N.ttf",
+  variable: "--font-arcade",
+});
+
+export default function CardBase({
   image,
   name,
   collectionName,
@@ -21,12 +26,9 @@ export default function CardPolygon({
   endTime,
   winner,
   raffleType,
+  paymentToken,
   id,
-}: IRafflePolygon) {
-  const { accounts } = useWallet();
-
-  const { signingClient } = useSigningClient();
-
+}: IRaffleBase) {
   const [timeDifference, setTimeDifference] = useState(
     formatDateDifference(startTime, endTime)
   );
@@ -41,12 +43,10 @@ export default function CardPolygon({
     }
   }, [startTime, endTime, winner]);
 
-  const handleBuy = useCallback(async () => {}, []);
-
   return (
-    <div className={`rounded-xl bg-black border-none`}>
+    <div className={`${arcade.className} rounded-xl bg-black border-none`}>
       <div
-        className="flex flex-col w-7 bg-transparent pb-3 border-transparent rounded-t-xl relative"
+        className="flex flex-col w-7 bg-transparent pb-3 relative border-4 border-[#0052FF]"
         style={{
           backgroundImage: `url(${image})`,
           backgroundSize: "cover",
@@ -56,24 +56,26 @@ export default function CardPolygon({
       ></div>
       <div className="flex flex-col px-3 py-3">
         <div
-          className={`bg-secondary flex w-fit p-1 items-center gap-2 rounded-lg text-sm`}
+          className={`text-[#0052FF] flex w-fit p-1 items-center gap-2 rounded-lg text-xs`}
         >
           <span>{collectionName}</span>
           <span className="text-green-300">
             <MdVerified />
           </span>
         </div>
-        <span className={`text-white font-bold text-xl mt-2`}>{name}</span>
-        <div className={`flex justify-between text-white`}>
-          <span>Ticket price</span>
-          <span className="font-bold">{getRafflePricePolygon(raffleType, price)}</span>
+        <span className={`text-white font-bold text-sm mt-2`}>{name}</span>
+        <div className={`flex justify-between text-white text-sm`}>
+          <span>Price</span>
+          <span className="font-bold">
+            {getRafflePriceBase(raffleType, price, paymentToken as string)}
+          </span>
         </div>
-        <div className={`flex justify-between text-white`}>
+        <div className={`flex justify-between text-white text-sm`}>
           <span>Tickets</span>
           <span className="font-bold">{ticketsSold}</span>
         </div>
         {winner === "0x0000000000000000000000000000000000000000" && (
-          <div className={`flex justify-between text-white`}>
+          <div className={`flex justify-between text-white text-xs mt-2`}>
             <span>Ends in</span>
             <span suppressHydrationWarning={true}>{timeDifference}</span>
           </div>
@@ -90,14 +92,15 @@ export default function CardPolygon({
           </div>
         )}
       </div>
-      <div className="flex justify-between px-3 py-3">
+      <div className="flex justify-between  py-3">
         {winner && winner === "0x0000000000000000000000000000000000000000" && (
-            <Link
-              href={`/polygon/${id}`}
-              className={`bg-secondary flex items-center justify-center rounded-lg p-3 w-full`}
-            >
-              View
-            </Link>
+          <Link
+            href={`/base/${id}`}
+            className="pixel-btn w-full flex items-center justify-center"
+            style={{ backgroundColor: "#0052FF" }}
+          >
+            View
+          </Link>
         )}
         {winner && winner !== "0x0000000000000000000000000000000000000000" && (
           <button className={`bg-secondary rounded-lg p-3 w-full`}>

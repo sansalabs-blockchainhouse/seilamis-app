@@ -5,7 +5,7 @@ export function formatNumber(numero: number) {
             ? numeroFormatado.slice(0, -2) + "k"
             : numeroFormatado + "k";
     } else {
-        return numero.toString();
+        return numero
     }
 }
 

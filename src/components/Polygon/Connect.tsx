@@ -1,7 +1,12 @@
-import { ConnectButton as Button } from "@rainbow-me/rainbowkit";
-export const ConnectButton = () => {
+import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+
+interface ConnectButtonProps {
+  buttonClassName?: string;
+}
+
+export const ConnectButton = ({ buttonClassName }: ConnectButtonProps) => {
   return (
-    <Button.Custom>
+    <RainbowConnectButton.Custom>
       {({
         account,
         chain,
@@ -32,7 +37,10 @@ export const ConnectButton = () => {
               if (!connected) {
                 return (
                   <button
-                    className="bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    className={
+                      buttonClassName ||
+                      "bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    }
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -43,7 +51,10 @@ export const ConnectButton = () => {
               if (chain.unsupported) {
                 return (
                   <button
-                    className="bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    className={
+                      buttonClassName ||
+                      "bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    }
                     onClick={openChainModal}
                     type="button"
                   >
@@ -54,7 +65,10 @@ export const ConnectButton = () => {
               return (
                 <div style={{ display: "flex", gap: 12 }}>
                   <button
-                    className="bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    className={
+                      buttonClassName ||
+                      "bg-secondary rounded-lg p-4 font-bold text-white uppercase h-14 w-40"
+                    }
                     onClick={openAccountModal}
                     type="button"
                   >
@@ -66,6 +80,6 @@ export const ConnectButton = () => {
           </div>
         );
       }}
-    </Button.Custom>
+    </RainbowConnectButton.Custom>
   );
 };
