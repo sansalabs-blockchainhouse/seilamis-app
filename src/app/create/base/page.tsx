@@ -105,13 +105,12 @@ export default function Create() {
         ? parseInt(currentNft.type)
         : currentNft.type;
 
-    const parsedEndDateMock = Math.floor((new Date().getTime() + 10 * 60 * 1000) / 1000);
 
     const raffleParams = {
       nftContract: currentNft.address,
       nftId: currentNft.tokenId,
       ticketPrice: price,
-      endDate: parsedEndDateMock,
+      endDate: parsedEndDate,
       raffleType: raffleTypeNum,
       nftType: nftTypeNum,
       paymentToken: raffleType,
