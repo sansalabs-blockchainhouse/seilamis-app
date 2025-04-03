@@ -103,7 +103,7 @@ export default function CardBase({
           </Link>
         )}
         {winner && winner !== "0x0000000000000000000000000000000000000000" && (
-          <button className={`bg-secondary rounded-lg p-3 w-full`}>
+          <button className={`bg-base rounded-lg p-3 w-full`}>
             Ended
           </button>
         )}
