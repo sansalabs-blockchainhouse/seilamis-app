@@ -60,7 +60,11 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="https://www.blckmrkt.io/">
-              <img src={styles.logo} className="h-10 md:h-12 lg:h-16" alt="Logo" />
+              <img
+                src={styles.logo}
+                className="h-10 md:h-12 lg:h-16"
+                alt="Logo"
+              />
             </Link>
           </div>
           {/* Desktop/Tablet Menu */}
@@ -74,16 +78,21 @@ export default function Navbar() {
                 Create
               </Link>
             )}
-            {network !== "sei" && freeTickets > 0 && address && address.length > 0 && (
-              <div
-                className={`${styles.freeTicketsButton} flex items-center justify-center rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40 cursor-pointer`}
-              >
-                {freeTickets} FREE TICKETS
-              </div>
-            )}
+            {network !== "sei" &&
+              freeTickets > 0 &&
+              address &&
+              address.length > 0 && (
+                <div
+                  className={`${styles.freeTicketsButton} flex items-center justify-center rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40 cursor-pointer`}
+                >
+                  {freeTickets} FREE TICKETS
+                </div>
+              )}
             {network !== "sei" && address && address.length > 0 && (
               <Link
-                href={network === "polygon" ? "/create/polygon" : "/create/base"}
+                href={
+                  network === "polygon" ? "/create/polygon" : "/create/base"
+                }
                 className={`${styles.createButton} flex items-center justify-center rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40`}
               >
                 Create
@@ -93,6 +102,18 @@ export default function Navbar() {
               <WalletConnectButton
                 buttonClassName={`${styles.walletButton} rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40`}
               />
+            ) : network === "base" ? (
+              <div className="flex space-x-2 items-center">
+                <ConnectButton
+                  buttonClassName={`${styles.walletButton} rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40`}
+                />
+                <Link
+                  href="https://dexscreener.com/base/0x59b873b7af67DcDd0d58d7B9066Fcc519Ba24468"
+                  target="_blank"
+                >
+                  <img src="/dex.svg" className="w-10 h-10" />
+                </Link>
+              </div>
             ) : (
               <ConnectButton
                 buttonClassName={`${styles.walletButton} rounded-lg p-2 md:p-4 font-bold uppercase h-10 md:h-14 w-24 md:w-40`}
@@ -114,9 +135,19 @@ export default function Navbar() {
                 aria-hidden="true"
               >
                 {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -136,16 +167,21 @@ export default function Navbar() {
                 Create
               </Link>
             )}
-            {network !== "sei" && freeTickets > 0 && address && address.length > 0 && (
-              <div
-                className={`${styles.freeTicketsButton} block text-center rounded-lg p-2 font-bold uppercase cursor-pointer`}
-              >
-                {freeTickets} FREE TICKETS
-              </div>
-            )}
+            {network !== "sei" &&
+              freeTickets > 0 &&
+              address &&
+              address.length > 0 && (
+                <div
+                  className={`${styles.freeTicketsButton} block text-center rounded-lg p-2 font-bold uppercase cursor-pointer`}
+                >
+                  {freeTickets} FREE TICKETS
+                </div>
+              )}
             {network !== "sei" && address && address.length > 0 && (
               <Link
-                href={network === "polygon" ? "/create/polygon" : "/create/base"}
+                href={
+                  network === "polygon" ? "/create/polygon" : "/create/base"
+                }
                 className={`${styles.createButton} block text-center rounded-lg p-2 font-bold uppercase`}
               >
                 Create
@@ -155,6 +191,18 @@ export default function Navbar() {
               <WalletConnectButton
                 buttonClassName={`${styles.walletButton} block text-center rounded-lg p-2 font-bold uppercase`}
               />
+            ) : network === "base" ? (
+              <div className="flex space-x-2">
+                <ConnectButton
+                  buttonClassName={`${styles.walletButton} block text-center rounded-lg p-2 font-bold uppercase`}
+                />
+                <Link
+                  href="https://dexscreener.com/base/0x59b873b7af67DcDd0d58d7B9066Fcc519Ba24468"
+                  target="_blank"
+                >
+                  <img src="/dex.svg" className="w-10 h-10" />
+                </Link>
+              </div>
             ) : (
               <ConnectButton
                 buttonClassName={`${styles.walletButton} block text-center rounded-lg p-2 font-bold uppercase`}
