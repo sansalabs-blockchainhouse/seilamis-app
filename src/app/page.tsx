@@ -47,7 +47,7 @@ const networkStyles = {
   },
   base: {
     mainBg: "bg-black",
-    floatingImg: "/float_base.png",
+    floatingImg: "",
     headingClass: `${arcade.className} text-white text-xl md:text-6xl`,
   },
 };
@@ -210,11 +210,13 @@ export default function Home() {
     >
       {/* Imagem flutuante */}
       <div className="fixed bottom-10 right-2 z-10 rounded-full p-2 cursor-pointer">
-        <img
-          src={networkStyles[selectedNetwork].floatingImg}
-          className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
-          alt="floating"
-        />
+        {networkStyles[selectedNetwork].floatingImg !== "" && (
+          <img
+            src={networkStyles[selectedNetwork].floatingImg}
+            className="h-48 animate-bounce animate-infinite animate-duration-[6000ms] animate-ease-linear"
+            alt="floating"
+          />
+        )}
       </div>
 
       <Navbar />
