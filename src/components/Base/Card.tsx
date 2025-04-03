@@ -81,7 +81,7 @@ export default function CardBase({
           </div>
         )}
         {winner && winner !== "0x0000000000000000000000000000000000000000" && (
-          <div className={`flex justify-between text-white`}>
+          <div className={`flex justify-between text-white text-xs mt-2`}>
             <span>Winner</span>
             <CopyToClipboard
               text={winner!}
