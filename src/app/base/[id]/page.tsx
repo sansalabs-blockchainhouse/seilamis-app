@@ -166,12 +166,12 @@ export default function Raffle({ params }: { params: { id: string } }) {
     <>
       {!isLoading && raffle && (
         <div
-          className={`bg-black flex min-h-screen flex-col items-center  ${arcade.className} `}
+          className={`bg-black flex min-h-screen flex-col items-center `}
         >
           <Navbar />
 
           <div
-            className={`flex flex-col items-start gap-4 justify-between p-5`}
+            className={`flex flex-col items-start gap-4 justify-between p-5 ${arcade.className}`}
           >
             <Link href={"/"} className="flex items-center gap-2">
               <span className={`text-white font-bold text-base`}>
@@ -232,7 +232,7 @@ export default function Raffle({ params }: { params: { id: string } }) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col mt-2 gap-2 bg-card_bg p-5 w-full md:w-1/2">
+          <div className={`flex flex-col mt-2 gap-2 bg-card_bg p-5 w-full md:w-1/2 ${arcade.className}`}>
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-white mt-1 text-sm font-semibold">
