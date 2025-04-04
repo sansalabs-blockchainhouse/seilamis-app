@@ -24,7 +24,7 @@ const arcade = localFont({
 export default function Create() {
   const { writeContractAsync } = useWriteContract();
   const { waitForTransactionReceipt } = useWaitForTransactionReceiptAsync();
-  const { switchChain } = useSwitchChain();
+  const { switchChainAsync } = useSwitchChain();
   const chain = useChainId();
 
   const { isConnected, address } = useAccount();
@@ -65,8 +65,8 @@ export default function Create() {
     );
 
     if (chain !== base.id) {
-      if (switchChain) {
-        await switchChain({
+      if (switchChainAsync) {
+        await switchChainAsync({
           chainId: base.id
         });
       } else {
@@ -141,7 +141,7 @@ export default function Create() {
     toast.success("Success!", {
       style: { backgroundColor: "#0052FF" },
     });
-  }, [chain, switchChain, currentNft, address, days, raffleType, polPrice, hitcoinPrice, endDate]);
+  }, [chain, switchChainAsync, currentNft, address, days, raffleType, polPrice, hitcoinPrice, endDate]);
 
   const addDays = (days: number) => {
     const newDate = new Date(currentDate);
