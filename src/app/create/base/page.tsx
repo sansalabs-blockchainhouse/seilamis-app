@@ -14,6 +14,7 @@ import { base } from "viem/chains";
 import { useWaitForTransactionReceiptAsync } from "@/hooks/useWaitForTransactionReceiptAsync";
 import { RAFFLE_BASE_ABI, RAFFLE_BASE_CONTRACT_ADDRESS } from "@/constants";
 import localFont from "next/font/local";
+import { useChainId, useSwitchChain } from "wagmi";
 
 const arcade = localFont({
   src: "../../../../public/ARCADE_N.ttf",
@@ -23,6 +24,8 @@ const arcade = localFont({
 export default function Create() {
   const { writeContractAsync } = useWriteContract();
   const { waitForTransactionReceipt } = useWaitForTransactionReceiptAsync();
+  const { switchChain } = useSwitchChain();
+  const chain = useChainId();
 
   const { isConnected, address } = useAccount();
 
@@ -60,6 +63,16 @@ export default function Create() {
     const { data } = await api.get(
       `raffle-base-verified/approved/${currentNft.address}/${address}`
     );
+
+    if (chain !== base.id) {
+      if (switchChain) {
+        await switchChain({
+          chainId: base.id
+        });
+      } else {
+        return toast.error("Por favor, mude para a rede Base.");
+      }
+    }
 
     if (!data.isApprovedForAll) {
       toast.loading("Sending...", {
@@ -105,7 +118,6 @@ export default function Create() {
         ? parseInt(currentNft.type)
         : currentNft.type;
 
-
     const raffleParams = {
       nftContract: currentNft.address,
       nftId: currentNft.tokenId,
@@ -129,7 +141,7 @@ export default function Create() {
     toast.success("Success!", {
       style: { backgroundColor: "#0052FF" },
     });
-  }, [currentNft, address, days, raffleType, polPrice, hitcoinPrice, endDate]);
+  }, [chain, switchChain, currentNft, address, days, raffleType, polPrice, hitcoinPrice, endDate]);
 
   const addDays = (days: number) => {
     const newDate = new Date(currentDate);
