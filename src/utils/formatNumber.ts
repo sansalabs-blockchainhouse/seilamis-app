@@ -10,6 +10,6 @@ export function formatNumber(numero: number) {
             ? formatted.slice(0, -2) + "k"
             : formatted + "k";
     } else {
-        return numero.toString();
+        return numero?.toString();
     }
 }
