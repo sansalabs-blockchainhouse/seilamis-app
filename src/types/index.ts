@@ -30,6 +30,7 @@ export interface IRafflePolygon {
 export interface IRaffleBase {
     id: string;
     collectionName: string;
+    nftContract: string
     nftId: string;
     creator: string;
     name: string;

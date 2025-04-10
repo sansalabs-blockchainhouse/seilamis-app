@@ -27,6 +27,8 @@ export default function CardBase({
   winner,
   raffleType,
   paymentToken,
+  nftContract,
+  nftId,
   id,
 }: IRaffleBase) {
   const [timeDifference, setTimeDifference] = useState(
@@ -55,14 +57,24 @@ export default function CardBase({
         }}
       ></div>
       <div className="flex flex-col px-3 py-3">
-        <div
-          className={`text-[#0052FF] flex w-fit p-1 items-center gap-2 rounded-lg text-xs`}
-        >
-          <span>{collectionName}</span>
-          <span className="text-green-300">
-            <MdVerified />
-          </span>
+        <div className="flex w-full justify-between">
+          <div
+            className={`text-[#0052FF] flex w-fit p-1 items-center gap-2 rounded-lg text-xs`}
+          >
+            <span>{collectionName}</span>
+            <span className="text-green-300">
+              <MdVerified />
+            </span>
+          </div>
+          <Link
+            target="_blank"
+            className="cursor-pointer"
+            href={`https://opensea.io/assets/base/${nftContract}/${nftId}`}
+          >
+            <img src="/Logomark-Blue.png" className="w-5 h-5" />
+          </Link>
         </div>
+
         <span className={`text-white font-bold text-sm mt-2`}>{name}</span>
         <div className={`flex justify-between text-white text-sm`}>
           <span>Price</span>
@@ -103,9 +115,7 @@ export default function CardBase({
           </Link>
         )}
         {winner && winner !== "0x0000000000000000000000000000000000000000" && (
-          <button className={`bg-base rounded-lg p-3 w-full`}>
-            Ended
-          </button>
+          <button className={`bg-base rounded-lg p-3 w-full`}>Ended</button>
         )}
       </div>
     </div>

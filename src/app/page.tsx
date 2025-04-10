@@ -21,6 +21,7 @@ interface IItem {
   endTime: string;
   winner?: string;
   ticketsSold: number;
+  nftContract: string
   isVerified?: boolean;
   nftId?: string;
   raffleType?: number;
@@ -152,6 +153,7 @@ export default function Home() {
         <CardBase
           key={index}
           id={item.id}
+          nftContract={item.nftContract}
           image={item.image}
           name={item.name}
           startTime={item.startTime}
