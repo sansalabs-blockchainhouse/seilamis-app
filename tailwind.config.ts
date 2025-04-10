@@ -17,6 +17,7 @@ const config: Config = {
       backgroundImage: {
         "bg@1": "url('/bg@1.jpg')",
         "bg@2": "url('/bg@2.png')",
+        "bg@3": "url('/bg@3.png')",
       },
     },
     fontFamily: {

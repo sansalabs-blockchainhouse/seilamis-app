@@ -46,7 +46,7 @@ const networkStyles = {
     headingClass: `text-white text-5xl md:text-8xl`,
   },
   base: {
-    mainBg: "bg-black",
+    mainBg: "bg-bg@3 bg-cover",
     floatingImg: "",
     headingClass: `${arcade.className} text-white text-xl md:text-6xl`,
   },

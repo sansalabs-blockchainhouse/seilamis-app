@@ -243,6 +243,9 @@ export default function Create() {
                   <option value="0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb">
                     $CLANKER
                   </option>
+                  <option value="0x22aF33FE49fD1Fa80c7149773dDe5890D3c76F3b">
+                    $BANKR
+                  </option>
                 </select>
               </div>
               {raffleType === "0x0000000000000000000000000000000000000000" && (
