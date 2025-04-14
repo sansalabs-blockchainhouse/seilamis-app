@@ -70,7 +70,7 @@ export default function Create() {
           chainId: base.id
         });
       } else {
-        return toast.error("Por favor, mude para a rede Base.");
+        return toast.error("Please switch to the Base network.");
       }
     }
 

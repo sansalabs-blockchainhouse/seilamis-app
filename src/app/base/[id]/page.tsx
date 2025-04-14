@@ -11,7 +11,7 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import Navbar from "@/components/Navbar";
 import { getRafflePriceBase } from "@/utils/getRafflePrice";
 import { IRaffleBase } from "@/types";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useChainId, useSwitchChain, useWriteContract } from "wagmi";
 import { base } from "viem/chains";
 import { RAFFLE_BASE_ABI, RAFFLE_BASE_CONTRACT_ADDRESS } from "@/constants";
 import { parseEther } from "viem";
@@ -26,6 +26,10 @@ const arcade = localFont({
 export default function Raffle({ params }: { params: { id: string } }) {
   const { address, isConnected } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { switchChainAsync } = useSwitchChain();
+
+  const chain = useChainId();
+
   const { waitForTransactionReceipt } = useWaitForTransactionReceiptAsync();
   const { data: raffle, isLoading } = useQuery({
     queryKey: ["raffle-base-id"],
@@ -58,6 +62,16 @@ export default function Raffle({ params }: { params: { id: string } }) {
 
   const handleBuy = useCallback(async () => {
     if (!raffle) return;
+    if (chain !== base.id) {
+      if (switchChainAsync) {
+        await switchChainAsync({
+          chainId: base.id
+        });
+      } else {
+        return toast.error("Please switch to the Base network.");
+      }
+    }
+
     if (raffle.paymentToken === "0x0000000000000000000000000000000000000000") {
       toast.loading("Sending...", {
         style: {
