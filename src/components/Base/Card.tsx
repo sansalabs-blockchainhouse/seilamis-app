@@ -83,7 +83,7 @@ export default function CardBase({
           </span>
         </div>
         <div className={`flex justify-between text-white text-sm`}>
-          <span>Tickets</span>
+          <span>Tickets Sold</span>
           <span className="font-bold">{ticketsSold}</span>
         </div>
         {winner === "0x0000000000000000000000000000000000000000" && (
