@@ -43,6 +43,8 @@ export function getRafflePriceBase(
           return `${formatNumber(value)} $TEST`;
         case "0x22aF33FE49fD1Fa80c7149773dDe5890D3c76F3b":
           return `${formatNumber(value)} $BANKR`;
+        case "0x2531ec1720E5d1bC82052585271D4BE3f43E392F":
+          return `${formatNumber(value)} $BOBR`;
         default:
           return `${formatNumber(value)} TOKEN`;
       }

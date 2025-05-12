@@ -67,7 +67,7 @@ export default function Create() {
     if (chain !== base.id) {
       if (switchChainAsync) {
         await switchChainAsync({
-          chainId: base.id
+          chainId: base.id,
         });
       } else {
         return toast.error("Please switch to the Base network.");
@@ -141,7 +141,17 @@ export default function Create() {
     toast.success("Success!", {
       style: { backgroundColor: "#0052FF" },
     });
-  }, [chain, switchChainAsync, currentNft, address, days, raffleType, polPrice, hitcoinPrice, endDate]);
+  }, [
+    chain,
+    switchChainAsync,
+    currentNft,
+    address,
+    days,
+    raffleType,
+    polPrice,
+    hitcoinPrice,
+    endDate,
+  ]);
 
   const addDays = (days: number) => {
     const newDate = new Date(currentDate);
@@ -268,6 +278,23 @@ export default function Create() {
                 <div className="flex flex-col">
                   <label className={`text-white text-base`}>
                     TIcket Price (MRKT)
+                    <span className="text-red-700">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="1"
+                    value={hitcoinPrice}
+                    pattern="^[0-9]+([,.][0-9]+)?$"
+                    onChange={(e) => setHitcoinPrice(e.target.value)}
+                    className={`bg-base w-52 text-base box-border border border-white border-opacity-20  py-2 focus:outline-none text-white text-opacity-90 px-4`}
+                  />
+                </div>
+              )}
+              {raffleType === "0x2531ec1720E5d1bC82052585271D4BE3f43E392F" && (
+                <div className="flex flex-col">
+                  <label className={`text-white text-base`}>
+                    TIcket Price (BOBR)
                     <span className="text-red-700">*</span>
                   </label>
 
